@@ -65,7 +65,7 @@ char	*ft_find_permission(mode_t law_b10, char type)
 	return (str);
 }
 
-t_ls	ft_fill_one_file(struct dirent *ptr_file, struct stat statbuf, int a)
+t_ls	ft_fill_one_file(struct dirent *ptr_file, struct stat statbuf, char l)
 {
 	struct passwd 	*user;
  	struct group 	*grps;
@@ -74,7 +74,7 @@ t_ls	ft_fill_one_file(struct dirent *ptr_file, struct stat statbuf, int a)
 	file.name = ft_strdup(ptr_file->d_name);
 	file.time = statbuf.st_mtime;
 	file.type = ptr_file->d_type;
-	if (a == TRUE)
+	if (l == TRUE)
 	{	
 		user = getpwuid(statbuf.st_uid);
 		grps = getgrgid(statbuf.st_gid);
@@ -87,7 +87,7 @@ t_ls	ft_fill_one_file(struct dirent *ptr_file, struct stat statbuf, int a)
 	return (file);
 }
 
-t_ls	*ft_fill_all_files(char *str)
+t_ls	*ft_fill_all_files(char *str, t_option syn)
 {
     struct dirent	*ptr_file;
     struct stat     statbuf;
@@ -102,7 +102,7 @@ t_ls	*ft_fill_all_files(char *str)
 	while ((ptr_file = readdir(repo)) != NULL)
 	{
 		stat(ptr_file->d_name, &statbuf);
-		file[nb_file] = ft_fill_one_file(ptr_file, statbuf, 1);
+		file[nb_file] = ft_fill_one_file(ptr_file, statbuf, syn.l);
 		nb_file++;
 	}
 	file[0].nb_file = nb_file;

@@ -41,13 +41,23 @@ typedef struct	s_ls
 	int		nb_link;
 }				t_ls;
 
-void	ft_ls(char *str);
+typedef struct  s_option
+{
+	char	l;
+	char	u_r;
+	char	l_r;
+	char	a;
+	char	t;
+	char 	error;
+}				t_option;
+
+void	ft_ls(char *str, t_option syn);
 
 char	*ft_check_rwx(int law);
 char	ft_check_type_char(char type);
-t_ls	*ft_fill_all_files(char *str);
+t_ls	*ft_fill_all_files(char *str, t_option syn);
 char	*ft_find_permission(mode_t law_b10, char type);
-t_ls	ft_fill_one_file(struct dirent *ptr_file, struct stat statbuf, int a);
+t_ls	ft_fill_one_file(struct dirent *ptr_file, struct stat statbuf, char l);
 
 int		ft_count_file(char *str);
 int		ft_convert_base(int nb, int len_base);
