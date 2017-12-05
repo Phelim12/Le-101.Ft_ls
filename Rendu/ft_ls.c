@@ -219,7 +219,7 @@ void	ft_ls(char *str, t_option syn)
 
 	file = ft_fill_all_files(str, syn);
 	if (file == NULL)
-		return;
+		return ;
 	ft_sort_ascii(file, 0, 0);
 	if (syn.t == TRUE)
 		ft_sort_time(file, 0, 0);
