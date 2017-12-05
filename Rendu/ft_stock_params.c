@@ -59,13 +59,13 @@ char	*ft_find_permission(mode_t law_b10, char type)
 	str = ft_strnew(10);
 	str[0] = ft_check_type_char(type);
 	law = (ft_convert_base(law_b10, 8) % 1000);
-	str = ft_strjoin(str, ft_check_rwx(law / 100));
-	str = ft_strjoin(str, ft_check_rwx((law % 100) / 10));
-	str = ft_strjoin(str, ft_check_rwx(law % 10));
+	ft_strcat(str, ft_check_rwx(law / 100));
+	ft_strcat(str, ft_check_rwx((law % 100) / 10));
+	ft_strcat(str, ft_check_rwx(law % 10));
 	return (str);
 }
 
-t_ls	ft_fill_one_file(struct dirent *ptr_file, struct stat statbuf, char l)
+t_ls	ft_fill_one_file(struct dirent *ptr_file, struct stat statbuf, t_option syn)
 {
 	struct passwd 	*user;
  	struct group 	*grps;
@@ -74,7 +74,7 @@ t_ls	ft_fill_one_file(struct dirent *ptr_file, struct stat statbuf, char l)
 	file.name = ft_strdup(ptr_file->d_name);
 	file.time = statbuf.st_mtime;
 	file.type = ptr_file->d_type;
-	if (l == TRUE)
+	if (syn.l == TRUE)
 	{	
 		user = getpwuid(statbuf.st_uid);
 		grps = getgrgid(statbuf.st_gid);
@@ -83,6 +83,7 @@ t_ls	ft_fill_one_file(struct dirent *ptr_file, struct stat statbuf, char l)
 		file.nb_byte = statbuf.st_size;
 		file.group = ft_strdup(grps->gr_name);
 		file.user = ft_strdup(user->pw_name);
+		//printf("%s %d %s %s %lld %s\n", file.law, file.nb_link, file.user, file.group, statbuf.st_size, file.name);
 	}
 	return (file);
 }
@@ -91,20 +92,33 @@ t_ls	*ft_fill_all_files(char *str, t_option syn)
 {
     struct dirent	*ptr_file;
     struct stat     statbuf;
-    t_ls			*file;
 	int				nb_file;
+	int				nb_blocks;
+    t_ls			*file;
 	DIR				*repo;
+    char			*tmp;
 
 	nb_file = 0;
+	nb_blocks = 0;
     ptr_file = NULL;
 	repo = opendir(str);
+	if (repo == NULL)
+	{
+		perror("");
+		return (NULL);
+	}
 	file = malloc(sizeof(t_ls) * ft_count_file(str));
 	while ((ptr_file = readdir(repo)) != NULL)
 	{
-		stat(ptr_file->d_name, &statbuf);
-		file[nb_file] = ft_fill_one_file(ptr_file, statbuf, syn.l);
+		tmp = ft_strjoin(str, ptr_file->d_name);
+		lstat(tmp, &statbuf);
+		nb_blocks += statbuf.st_blocks;
+		file[nb_file] = ft_fill_one_file(ptr_file, statbuf, syn);
 		nb_file++;
+		free(tmp);
 	}
+	closedir(repo);
+	file[0].nb_blocks = nb_blocks;
 	file[0].nb_file = nb_file;
 	return (file);
 }

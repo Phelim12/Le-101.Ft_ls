@@ -58,42 +58,55 @@ t_option	ft_check_params(char *str, int a)
 
 void	ft_check_file(char **argv, t_option syn)
 {
-	struct dirent	*ptr_file;
-	char 			*ret;	
 	DIR				*repo;
+	char			*tmp1;
+	char			*tmp2;
 	int				a;
 
 	a = 0;
-	ret = ft_strnew(ft_count_file("."));
 	while (argv[a])
 	{
 		repo = opendir(argv[a]);
 		if (repo == NULL)
 		{
-			ft_putstr(ft_strjoin("./ft_ls: ", ft_strjoin(argv[a], ": ")));
+			tmp2 = ft_strjoin(argv[a], ": ");
+			tmp1 = ft_strjoin("./ft_ls: ", tmp2);
+			ft_putstr(tmp1);
 			perror("");
+			free(tmp2);
 		}
 		else
-			ft_ls(ft_strjoin("./", ft_strjoin(argv[a], "/")), syn);
+		{
+			if (argv[a][ft_strlen(argv[a]) - 1] == '/')
+				tmp1 = ft_strdup(argv[a]);
+			else
+				tmp1 = ft_strjoin(argv[a], "/");
+			closedir(repo);
+			ft_ls(tmp1, syn);
+		}
 		a++;
+		free(tmp1);
 	}
 }
 
 int			main(int argc, char const *argv[])
 {
+	char		*def;
 	t_option 	syn;
 
+	def = ft_strdup("./");
 	syn = ft_option_to_zero();
 	if (argc >= 2 && argv[1][0] == '-')
 	{
 		syn = ft_check_params((char *)argv[1], 1);
 		ft_check_file((char **)argv + 2, syn);
 		if (argc == 2 && argv[1][1] != 0 && syn.error == FALSE)
-			ft_ls("./", syn);
+			ft_ls(def, syn);
 	}
 	else if (argc > 1 && argv[1][0] != '-')
 		ft_check_file((char **)argv + 1, syn);
 	else
-		ft_ls("./", syn);
+		ft_ls(def, syn);
+	free(def);
 	return 0;
 }

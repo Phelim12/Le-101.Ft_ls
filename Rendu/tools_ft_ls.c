@@ -24,6 +24,7 @@ int		ft_count_file(char *str)
 	repo = opendir(str);
 	while ((ptr_file = readdir(repo)) != NULL)
 		nb_file++;
+	closedir(repo);
 	return (nb_file);
 }
 
