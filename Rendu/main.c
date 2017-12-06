@@ -77,7 +77,7 @@ void	ft_check_file(char **argv, t_option syn)
 		}
 		else
 		{
-			if (argv[a][ft_strlen(argv[a]) - 1] == '/')
+			if (argv[a][ft_strlen(argv[a]) - 1] == '/' && ft_strcmp(argv[a], "~/") != 0)
 				tmp1 = ft_strdup(argv[a]);
 			else
 				tmp1 = ft_strjoin(argv[a], "/");
@@ -110,3 +110,4 @@ int			main(int argc, char const *argv[])
 	free(def);
 	return 0;
 }
+

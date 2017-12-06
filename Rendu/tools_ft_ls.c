@@ -28,10 +28,10 @@ int		ft_count_file(char *str)
 	return (nb_file);
 }
 
-int		ft_convert_base(int nb, int len_base)
+long int	ft_convert_base(long int nb, int len_base)
 {
-	int ret;
-	int multi;
+	long int	ret;
+	long int	multi;
 
 	ret = 0;
 	multi = 1;

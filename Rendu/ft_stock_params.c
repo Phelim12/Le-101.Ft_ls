@@ -51,47 +51,57 @@ char	ft_check_type_char(char type)
 	return ('?');
 }
 
-char	*ft_find_permission(mode_t law_b10, char type)
+char	*ft_find_permission(char *path, mode_t law_b10, char type)
 {
-	char	*str;
+	char	*ret;
 	int		law;
 	
-	str = ft_strnew(10);
-	str[0] = ft_check_type_char(type);
+	ret = ft_strnew(11);
+	ret[0] = ft_check_type_char(type);
 	law = (ft_convert_base(law_b10, 8) % 1000);
-	ft_strcat(str, ft_check_rwx(law / 100));
-	ft_strcat(str, ft_check_rwx((law % 100) / 10));
-	ft_strcat(str, ft_check_rwx(law % 10));
-	return (str);
+	ft_strcat(ret, ft_check_rwx(law / 100));
+	ft_strcat(ret, ft_check_rwx((law % 100) / 10));
+	ft_strcat(ret, ft_check_rwx(law % 10));
+	if ((listxattr(path, NULL, 1, XATTR_NOFOLLOW)) > 0)
+		ret[10] = '@';
+	else
+		ret[10] = ' ';
+	return (ret);
 }
 
-t_ls	ft_fill_one_file(struct dirent *ptr_file, struct stat statbuf, t_option syn)
+t_ls	ft_fill_one_file(t_dirent *ptr_file, t_stat statbuf, char *str, t_option syn)
 {
-	struct passwd 	*user;
- 	struct group 	*grps;
-	t_ls			file;
+ 	char		*path;
+	t_passwd	*user;
+ 	t_group		*grps;
+	t_ls		file;
 
-	file.name = ft_strdup(ptr_file->d_name);
-	file.time = statbuf.st_mtime;
+	file.rdev = 0;
 	file.type = ptr_file->d_type;
+	file.time = statbuf.st_mtime;
+	file.name = ft_strdup(ptr_file->d_name);
+	path = ft_strjoin(str, file.name);
 	if (syn.l == TRUE)
 	{	
 		user = getpwuid(statbuf.st_uid);
 		grps = getgrgid(statbuf.st_gid);
-		file.law = ft_find_permission(statbuf.st_mode, file.type);
+		file.law = ft_find_permission(path, statbuf.st_mode, file.type);
 		file.nb_link = statbuf.st_nlink;
 		file.nb_byte = statbuf.st_size;
 		file.group = ft_strdup(grps->gr_name);
 		file.user = ft_strdup(user->pw_name);
-		//printf("%s %d %s %s %lld %s\n", file.law, file.nb_link, file.user, file.group, statbuf.st_size, file.name);
+		if (statbuf.st_rdev > 0)
+			file.rdev = statbuf.st_rdev;
+		//printf("%s %d %s %s %d %lld %s\n", file.law, file.nb_link, file.user, file.group, statbuf.st_rdev, statbuf.st_size, file.name);
 	}
+	free(path);
 	return (file);
 }
 
 t_ls	*ft_fill_all_files(char *str, t_option syn)
 {
-    struct dirent	*ptr_file;
-    struct stat     statbuf;
+    t_dirent	*ptr_file;
+    t_stat     statbuf;
 	int				nb_file;
 	int				nb_blocks;
     t_ls			*file;
@@ -113,7 +123,7 @@ t_ls	*ft_fill_all_files(char *str, t_option syn)
 		tmp = ft_strjoin(str, ptr_file->d_name);
 		lstat(tmp, &statbuf);
 		nb_blocks += statbuf.st_blocks;
-		file[nb_file] = ft_fill_one_file(ptr_file, statbuf, syn);
+		file[nb_file] = ft_fill_one_file(ptr_file, statbuf, str, syn);
 		nb_file++;
 		free(tmp);
 	}
