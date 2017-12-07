@@ -1,14 +1,14 @@
 /* ************************************************************************** */
-/*                                                          LE - /            */
-/*                                                              /             */
-/*   ft_stock_params.c                                .::    .:/ .      .::   */
-/*                                                 +:+:+   +:    +:  +:+:+    */
-/*   By: clcreuso <clcreuso@student.le-101.fr>      +:+   +:    +:    +:+     */
-/*                                                 #+#   #+    #+    #+#      */
-/*   Created: 2017/11/30 16:01:42 by clcreuso     #+#   ##    ##    #+#       */
-/*   Updated: 2017/11/30 16:01:42 by clcreuso    ###    #+. /#+    ###.fr     */
-/*                                                         /                  */
-/*                                                        /                   */
+/*														  LE - /			*/
+/*															  /			 */
+/*   ft_stock_params.c								.::	.:/ .	  .::   */
+/*												 +:+:+   +:	+:  +:+:+	*/
+/*   By: clcreuso <clcreuso@student.le-101.fr>	  +:+   +:	+:	+:+	 */
+/*												 #+#   #+	#+	#+#	  */
+/*   Created: 2017/11/30 16:01:42 by clcreuso	 #+#   ##	##	#+#	   */
+/*   Updated: 2017/11/30 16:01:42 by clcreuso	###	#+. /#+	###.fr	 */
+/*														 /				  */
+/*														/				   */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
@@ -66,58 +66,56 @@ char	*ft_find_permission(char *path, mode_t law_b10, char type)
 		ret[10] = '@';
 	else
 		ret[10] = ' ';
+	free(path);
 	return (ret);
 }
 
 t_ls	ft_fill_one_file(t_dirent *ptr_file, t_stat statbuf, char *str, t_option syn)
 {
- 	char		*path;
 	t_passwd	*user;
  	t_group		*grps;
 	t_ls		file;
+ 	char		*path;
+	char		buf[1024];
+ 	int ret;
 
-	file.rdev = 0;
 	file.type = ptr_file->d_type;
 	file.time = statbuf.st_mtime;
 	file.name = ft_strdup(ptr_file->d_name);
-	path = ft_strjoin(str, file.name);
+	path = ft_strjoin(str, "/");
+	path = ft_strjoin(path, file.name);
+	file.ptr_link = NULL;
 	if (syn.l == TRUE)
-	{	
+	{
+		if (S_ISLNK(statbuf.st_mode))
+		{
+			ret = readlink(path, buf, 1024);
+			buf[ret] = '\0';	
+			file.ptr_link = ft_strdup(buf);
+		}
+		file.nb_byte = statbuf.st_size;
 		user = getpwuid(statbuf.st_uid);
 		grps = getgrgid(statbuf.st_gid);
-		file.law = ft_find_permission(path, statbuf.st_mode, file.type);
 		file.nb_link = statbuf.st_nlink;
-		file.nb_byte = statbuf.st_size;
-		file.group = ft_strdup(grps->gr_name);
 		file.user = ft_strdup(user->pw_name);
-		if (statbuf.st_rdev > 0)
-			file.rdev = statbuf.st_rdev;
-		//printf("%s %d %s %s %d %lld %s\n", file.law, file.nb_link, file.user, file.group, statbuf.st_rdev, statbuf.st_size, file.name);
+		file.group = ft_strdup(grps->gr_name);
+		file.law = ft_find_permission(path, statbuf.st_mode, file.type);
 	}
-	free(path);
 	return (file);
 }
 
-t_ls	*ft_fill_all_files(char *str, t_option syn)
+t_ls	*ft_fill_all_files(char *str, t_option syn, int nb_file, int nb_blocks)
 {
-    t_dirent	*ptr_file;
-    t_stat     statbuf;
-	int				nb_file;
-	int				nb_blocks;
-    t_ls			*file;
+	t_dirent		*ptr_file;
+	t_stat			statbuf;
+	t_ls			*file;
 	DIR				*repo;
-    char			*tmp;
+	char			*tmp;
 
-	nb_file = 0;
-	nb_blocks = 0;
-    ptr_file = NULL;
-	repo = opendir(str);
-	if (repo == NULL)
-	{
-		perror("");
+	if ((repo = opendir(str)) == NULL)
 		return (NULL);
-	}
-	file = malloc(sizeof(t_ls) * ft_count_file(str));
+	if ((file = malloc(sizeof(t_ls) * ft_count_file(str))) == NULL)
+		return (NULL);
 	while ((ptr_file = readdir(repo)) != NULL)
 	{
 		tmp = ft_strjoin(str, ptr_file->d_name);
@@ -127,8 +125,8 @@ t_ls	*ft_fill_all_files(char *str, t_option syn)
 		nb_file++;
 		free(tmp);
 	}
-	closedir(repo);
 	file[0].nb_blocks = nb_blocks;
 	file[0].nb_file = nb_file;
+	closedir(repo);
 	return (file);
 }

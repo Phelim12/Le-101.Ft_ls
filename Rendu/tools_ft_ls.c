@@ -13,6 +13,16 @@
 
 #include "ft_ls.h"
 
+void	ft_error(char *str)
+{
+	char			*error;	
+
+	error = ft_strdup("./ft_ls: ");
+	str[ft_strlen(str) - 1] = 0;
+	str = ft_strrchr(str, '/');
+	perror(ft_strcat(error, ++str));
+}
+
 int		ft_count_file(char *str)
 {
     struct dirent	*ptr_file;
