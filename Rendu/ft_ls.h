@@ -14,6 +14,9 @@
 #ifndef FT_LS_H
 # define FT_LS_H
 
+# define FT_MAX(a, b) ((a) > (b) ? (a) : (b))
+# define FT_MAX_WR(a,b)	a = FT_MAX(a,b)
+
 # include <sys/types.h>
 # include <pwd.h>
 # include <grp.h>
@@ -29,13 +32,15 @@
 # define TRUE 1
 # define FALSE 0
 
-typedef struct dirent t_dirent;
-typedef struct stat t_stat;
-typedef struct group t_group;
-typedef struct passwd t_passwd;
+typedef struct dirent	t_dirent;
+typedef struct stat		t_stat;
+typedef struct group	t_group;
+typedef struct passwd	t_passwd;
 
 typedef struct	s_ls
 {
+	int			mode;
+	char 		*path;
 	char		*tmp;
 	long int	time;
 	char		type;
@@ -45,22 +50,25 @@ typedef struct	s_ls
 	char		*group;
 	char 		*error;
 	char		*ptr_link;
+	int			minor;
+	int			major;
 	int			rdev;
-	int			nb_byte;
+	int			size;
 	int			nb_link;
 	int			nb_file;
 	int			nb_blocks;
+	char 		special;
 }				t_ls;
 
 typedef struct	s_space
 {
-	int			len_user;
-	int			len_size;
-	int			len_link;
-	int			len_minor;
-	int			len_major;
-	int			len_group;
-	int			len_name;
+	int			user;
+	int			size;
+	int			link;
+	int			minor;
+	int			major;
+	int			group;
+	int			name;
 }				t_space;
 
 typedef struct  s_option
@@ -101,12 +109,12 @@ char	*ft_check_rwx(int law);
 char	ft_check_type_char(char type);
 char	*ft_find_permission(char *path, mode_t law_b10, char type);
 t_ls	*ft_fill_all_files(char *str, t_option syn, int nb_file, int nb_blocks);
-t_ls		ft_fill_one_file(t_dirent *ptr_file, t_stat statbuf, char *str, t_option syn);
+t_ls	ft_fill_one(char *path, t_dirent *ptr, t_stat statbuf, t_option syn);
 
 t_option	ft_option_to_zero();
 t_option	ft_check_params(char *str, int a);
 void		ft_check_file(char **argv, t_option syn);
-
+void	ft_fill_special(t_ls *file, char *path);
 
 void	ft_print_file(t_ls *file, t_option syn, int a);
 void	ft_print_stat(t_ls file, t_space space, t_option syn);

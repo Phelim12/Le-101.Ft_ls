@@ -15,9 +15,9 @@
 
 void	ft_sort_ascii(t_ls *file, int a, int b)
 {
-	int	save_nb_file;
-	int	save_nb_blocks;
-	t_ls swap;
+	int		save_nb_file;
+	int		save_nb_blocks;
+	t_ls	swap;
 
 	save_nb_file = file[0].nb_file;
 	save_nb_blocks = file[0].nb_blocks;
@@ -42,9 +42,9 @@ void	ft_sort_ascii(t_ls *file, int a, int b)
 
 void	ft_sort_time(t_ls *file, int a, int b)
 {
-	int	save_nb_file;
-	int	save_nb_blocks;
-	t_ls swap;
+	int		save_nb_file;
+	int		save_nb_blocks;
+	t_ls	swap;
 
 	save_nb_file = file[0].nb_file;
 	save_nb_blocks = file[0].nb_blocks;

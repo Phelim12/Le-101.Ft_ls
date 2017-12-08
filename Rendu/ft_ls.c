@@ -15,8 +15,6 @@
 
 void	ft_free_params(t_ls_r *params, char **name, char *str, int choice)
 {
-	int len;
-
 	if (choice == TRUE)
 	{
 		params->tmp3 = ft_strjoin(*name, ":");
@@ -34,18 +32,19 @@ void	ft_free_params(t_ls_r *params, char **name, char *str, int choice)
 	}
 }
 
-void	ft_ls_R_rev(t_ls *file, t_option syn, char *str, int a)
+void	ft_ls_r_rev(t_ls *file, t_option syn, char *str, int a)
 {
 	t_ls_r params;
 
 	while (a >= 0)
 	{
-		while ((a >= 0) && (ft_strcmp(file[a].name, ".") == 0 || ft_strcmp(file[a].name, "..") == 0))
+		while ((a >= 0) && (ft_strcmp(file[a].name, ".") == 0 ||
+			ft_strcmp(file[a].name, "..") == 0))
 			a--;
 		while ((a >= 0) && syn.a == FALSE && file[a].name[0] == '.')
 			a--;
 		if (a < 0)
-			break;
+			break ;
 		ft_free_params(&params, &file[a].name, str, TRUE);
 		if (syn.u_r == TRUE && file[a].type == 4)
 		{
@@ -58,18 +57,19 @@ void	ft_ls_R_rev(t_ls *file, t_option syn, char *str, int a)
 	}
 }
 
-void	ft_ls_R(t_ls *file, t_option syn, char *str, int a)
+void	ft_ls_r(t_ls *file, t_option syn, char *str, int a)
 {
 	t_ls_r params;
 
 	while (a < file[0].nb_file)
 	{
-		while ((a < file[0].nb_file) && (ft_strcmp(file[a].name, ".") == 0 || ft_strcmp(file[a].name, "..") == 0))
+		while ((a < file[0].nb_file) && (ft_strcmp(file[a].name, ".") == 0 ||
+		ft_strcmp(file[a].name, "..") == 0))
 			a++;
-		while ((a < file[0].nb_file) && syn.a == FALSE && file[a].name[0] == '.')
+		while ((a < file[0].nb_file) && !(syn.a) && file[a].name[0] == '.')
 			a++;
 		if (a >= file[0].nb_file)
-			break;
+			break ;
 		ft_free_params(&params, &file[a].name, str, TRUE);
 		if (syn.u_r == TRUE && file[a].type == 4)
 		{
@@ -98,8 +98,8 @@ void	ft_ls(char *str, t_option syn)
 	if (syn.l_r == FALSE)
 		ft_print_file(file, syn, 0);
 	if (syn.u_r == TRUE && syn.l_r == TRUE)
-		ft_ls_R_rev(file, syn, str, (file[0].nb_file - 1));
+		ft_ls_r_rev(file, syn, str, (file[0].nb_file - 1));
 	if (syn.u_r == TRUE && syn.l_r == FALSE)
-		ft_ls_R(file, syn, str, 0);
+		ft_ls_r(file, syn, str, 0);
 	free(file);
 }

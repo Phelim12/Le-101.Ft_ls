@@ -19,11 +19,38 @@ void	ft_alignment(char *str, int before, int after, int pick)
 		before -= ft_strlen(str);
 	if (pick == 2)
 		after -= ft_strlen(str);
-	while (before-- > 0)		
+	while (before-- > 0)
 		ft_putchar(' ');
 	ft_putstr(str);
 	while (after-- > 0)
 		ft_putchar(' ');
+}
+
+void	ft_print_special(t_ls file, t_space space, t_option syn, int way)
+{
+	if (way == 1)
+	{
+		if (S_ISBLK(file.mode) || S_ISCHR(file.mode))
+		{
+			ft_alignment(ft_itoa(file.major), space.major, 0, 1);
+			ft_putstr(", ");
+			ft_alignment(ft_itoa(file.minor), space.minor, 0, 1);
+		}
+		else if (syn.a == TRUE)
+			ft_alignment(ft_itoa(file.size), space.size + space.minor, 0, 1);
+		else if (file.special == FALSE)
+			ft_alignment(ft_itoa(file.size), space.size + 1, 0, 1);
+		else
+			ft_alignment(ft_itoa(file.size), space.size + space.minor + 
+				space.major + 1, 0, 1);
+	}
+	else
+	{
+		ft_putstr(file.name);
+		ft_putstr(" -> ");
+		ft_putendl(file.ptr_link);
+		return ;
+	}
 }
 
 void	ft_print_file_rev(t_ls *file, t_option syn, int a)
@@ -32,7 +59,7 @@ void	ft_print_file_rev(t_ls *file, t_option syn, int a)
 
 	if (syn.l == TRUE)
 		space = ft_fill_len_params(file, syn);
-	space.len_name = ft_max_lenchar(file, syn, 2);
+	space.name = ft_max_lenchar(file, syn, 2);
 	while (a >= 0)
 	{
 		while (a >= 0 && syn.a == FALSE && file[a].name[0] == '.')
@@ -50,7 +77,7 @@ void	ft_print_file(t_ls *file, t_option syn, int a)
 
 	if (syn.l == TRUE)
 		space = ft_fill_len_params(file, syn);
-	space.len_name = ft_max_lenchar(file, syn, 2);
+	space.name = ft_max_lenchar(file, syn, 2);
 	while (a < file[0].nb_file)
 	{
 		while (a < file[0].nb_file && syn.a == FALSE && file[a].name[0] == '.')
@@ -64,26 +91,19 @@ void	ft_print_file(t_ls *file, t_option syn, int a)
 
 void	ft_print_stat(t_ls file, t_space space, t_option syn)
 {
-	char *tmp;
-
 	if (syn.l == TRUE)
 	{
-		tmp = ft_strsub(ctime(&file.time), 3, 13);
+		file.tmp = ft_strsub(ctime(&file.time), 3, 13);
 		ft_alignment(file.law, 0, 0, 0);
-		ft_alignment(ft_itoa(file.nb_link), space.len_link + 1, 0, 1);
-		ft_alignment(file.user, 1, space.len_user, 2);
-		ft_alignment(file.group, 2, space.len_group + 1, 2);
-		ft_alignment(ft_itoa(file.nb_byte), space.len_size + 1, 0, 1);
-		ft_alignment(tmp, 0, 1, 0);
-		if (file.ptr_link && )
-		{
-			ft_putstr(file.name);
-			ft_putstr(" -> ");
-			ft_putendl(file.ptr_link);
-		}
+		ft_alignment(ft_itoa(file.nb_link), space.link + 1, 0, 1);
+		ft_alignment(file.user, 1, space.user, 2);
+		ft_alignment(file.group, 2, space.group + 1, 2);
+		ft_print_special(file, space, syn, 1);
+		ft_alignment(file.tmp, 0, 1, 0);
+		if (S_ISLNK(file.mode))
+			ft_print_special(file, space, syn, 0);
 		else
 			ft_putendl(file.name);
-
 	}
 	else
 		ft_putendl(file.name);
