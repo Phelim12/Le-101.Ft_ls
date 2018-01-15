@@ -15,7 +15,6 @@
 
 CC = gcc
 
-CFLAGS = -Werror -Wextra -Wall
 
 NAME = ft_ls
 
@@ -25,7 +24,8 @@ DIR_SRC = Sources/
 
 DIR_LIB = Libft/
 
-NAME_SRC = 	main.c check_ls.c print_ls.c sort_ls.c stock_ls.c tools_ls.c
+NAME_SRC = 	main.c check_ls.c print_ls.c sort_ls.c stock_ls.c tools_ls.c \
+			argv_ls.c
 
 SRC =	$(addprefix $(DIR_SRC), $(NAME_SRC))
 
@@ -36,19 +36,21 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	@make -C $(DIR_LIB)
 	@$(CC) $(OBJ) -L $(DIR_LIB) -lft -o $(NAME) 
-	@echo "\033[0;32m✅️    Fillit executable created."
+	@echo "\033[0;32m✅️   make ft_ls."
 
 ./%.o: ./%.c
-	@$(CC) $(CFLAGS) -I $(DIR_INC) -o $@ -c $< 
-	@echo "\033[0;32m✅️    $@ created."
+	@$(CC) -I $(DIR_INC) -o $@ -c $< 
+	@echo "\033[0;32m✅️   $@ created."
 
 clean:
+	@make clean -C $(DIR_LIB)
 	@rm -f $(OBJ)
-	@echo "\033[0;31m🗑️    Deleting object files." 
+	@echo "\033[38;5;202m🗑️   clean ft_ls.\033[0m\033[K" 
 
 fclean: clean
+	@make fclean -C $(DIR_LIB)
 	@rm -f $(NAME)
-	@echo "\033[0;31m🗑️    Deleting fillit executable." 
+	@echo "\033[38;5;196m🗑️   fclean ft_ls.\033[0m\033[K" 
 
 re: fclean all
 

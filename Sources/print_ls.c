@@ -13,22 +13,40 @@
 
 #include "ft_ls.h"
 
-int		ft_time_isrecent(time_t event)
+void		ft_print_error(char *name)
 {
-	time_t	now;
-
-	now = time(&now);
-	if (now - event >= 0 && now - event <= 6 * 365 / 12 * 24 * 60 * 60)
-		return (1);
-	else
-		return (0);
+	ft_putstr_fd("ft_ls: ", 2);
+	ft_putstr_fd(name, 2);
+	ft_putstr_fd(": ", 2);
+	perror("");
 }
 
-void		ft_print_line_end(t_ls file, t_stat stat, char *space, char *time)
+void		ft_print_error_argv(char **argv)
 {
-	char 		buf[1024];
+	t_stat		stat;
+	DIR			*repo;
+	int			cur;
+
+	cur = -1;
+	while (argv[++cur])
+	{
+		if ((repo = opendir(argv[cur])) == NULL)
+		{
+			if ((lstat(argv[cur], &stat)) == -1)
+				ft_print_error(ft_cut_name(argv[cur]));
+		}
+		else
+			closedir(repo);
+	}
+}
+
+void		ft_print_line_end(t_ls file, t_stat stat, char *space)
+{
+	char		buf[1024];
+	char		*time;
 	int			ret;
 
+	time = ft_find_time(stat.st_mtime);
 	if (S_ISBLK(stat.st_mode) || S_ISCHR(stat.st_mode))
 	{
 		ft_printf("%*d, ", space[4] + 1, major(stat.st_rdev));
@@ -45,29 +63,7 @@ void		ft_print_line_end(t_ls file, t_stat stat, char *space, char *time)
 	}
 	else
 		ft_printf("%s %s\n", time, file.name);
-}
-
-char		*ft_find_time(time_t time)
-{
-	char *year;
-	char *date;
-	char *tmp;
-	char *ret;
-
-	date = ctime(&time);
-	date[ft_strlen(date) - 1] = 0;
-	if (ft_time_isrecent(time))
-		return (ft_strsub(date, 3, 13));
-	else
-	{
-		year = ft_isdigit(date[20]) ?
-		ft_strsub(date, 19, 5) : ft_strsub(date, 23, 6);
-		tmp = ft_strsub(date, 3, 8);
-		ret = ft_strjoin(tmp, year);
-		free(year);
-		free(tmp);
-		return (ret);
-	}
+	free(time);
 }
 
 void		ft_print_line_start(t_ls file, char *space)
@@ -75,19 +71,22 @@ void		ft_print_line_start(t_ls file, char *space)
 	t_passwd	*user;
 	t_group		*grps;
 	t_stat		stat;
-	char		*time;
 	char		*law;
 
 	lstat(file.path, &stat);
 	user = getpwuid(stat.st_uid);
 	grps = getgrgid(stat.st_gid);
-	time = ft_find_time(stat.st_mtime);
-	law = ft_find_permission(file.path, stat.st_mode, file.type);
-	ft_printf("%s %*d ", law,space[0], stat.st_nlink);
-	ft_printf("%-*s  ", space[1], user->pw_name);
-	ft_printf("%-*s ", space[2], grps->gr_name);
-	ft_print_line_end(file, stat, space, time);
-	free(time);
+	law = ft_check_permission(file.path, stat.st_mode, file.type);
+	ft_printf("%s %*d ", law, space[0], stat.st_nlink);
+	if (user == NULL)
+		ft_printf("%-*s  ", space[1], ft_itoa((int)stat.st_uid));
+	else
+		ft_printf("%-*s  ", space[1], user->pw_name);
+	if (grps == NULL)
+		ft_printf("%-*s  ", space[1], ft_itoa((int)stat.st_gid));
+	else
+		ft_printf("%-*s ", space[2], grps->gr_name);
+	ft_print_line_end(file, stat, space);
 	free(law);
 }
 
@@ -97,7 +96,7 @@ void		ft_print_ls(t_ls *file, char *option)
 	int			cur;
 
 	cur = 0;
-	space = ft_find_space(file, ft_strnew(7), 0);
+	space = ft_find_space(file, ft_strnew(7), -1);
 	if (ft_strchr(option, 'l') && file->nb > 0)
 		ft_printf("total %d\n", file->nb_blocks);
 	while (cur < file->nb)

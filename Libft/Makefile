@@ -25,6 +25,8 @@ DIR_MATH = Math/
 
 DIR_PRTF = Ft_printf/
 
+DIR_SORT = Sort/
+
 CHR = 	ft_isascii.c ft_isalnum.c ft_isalpha.c ft_isdigit.c ft_islower.c \
 		ft_isprint.c ft_isspace.c ft_isupper.c ft_tolower.c ft_toupper.c \
 		ft_size_wchar.c
@@ -59,10 +61,13 @@ MATH =	ft_atoi.c ft_atou.c ft_ilen.c ft_imaxlen.c ft_imaxtoa.c ft_next_sqrt.c\
 		ft_umaxlen_base.c ft_umaxtoa_base.c ft_itoa_base.c ft_imaxtoa_base.c \
 		ft_utoa.c ft_utoa_base.c 
 
+SORT =	ft_sort_rev_tab.c ft_sort_tab_ascii.c
+
 SRC = 	$(addprefix $(DIR_CHR), $(CHR)) $(addprefix $(DIR_GNL), $(GNL)) \
 		$(addprefix $(DIR_LST), $(LST)) $(addprefix $(DIR_STR), $(STR)) \
 		$(addprefix $(DIR_MEM), $(MEM)) $(addprefix $(DIR_PUT), $(PUT)) \
-		$(addprefix $(DIR_MATH), $(MATH)) $(addprefix $(DIR_PRTF), $(PRTF))
+		$(addprefix $(DIR_MATH), $(MATH)) $(addprefix $(DIR_PRTF), $(PRTF)) \
+		$(addprefix $(DIR_SORT), $(SORT))
 
 OBJ =	$(SRC:.c=.o)
 
@@ -90,14 +95,14 @@ clean:
 	@if [ -e Char/ft_isspace.c ]; \
 	then \
 		rm -rf $(OBJ); \
-		printf "\r\033[38;5;202m🗑️   clean $(NAME).\033[0m\033[K\n"; \
+		printf "\r\033[38;5;202m🗑️   clean libft.\033[0m\033[K\n"; \
 	fi;
 
 fclean: clean
 	@if [ -e $(NAME) ]; \
 	then \
 		rm -rf $(NAME); \
-		printf "\r\033[38;5;196m🗑️   fclean $(NAME).\033[0m\033[K\n"; \
+		printf "\r\033[38;5;196m🗑️   fclean libft.\033[0m\033[K\n"; \
 	fi;
 
 re: fclean all

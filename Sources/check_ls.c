@@ -13,6 +13,33 @@
 
 #include "ft_ls.h"
 
+int		ft_check_time(time_t event)
+{
+	time_t	now;
+
+	now = time(&now);
+	if (now - event >= 0 && now - event <= 6 * 365 / 12 * 24 * 60 * 60)
+		return (1);
+	else
+		return (0);
+}
+
+char	ft_check_acl(char *path)
+{
+	acl_t	acl;
+	char	ret;
+
+	if ((listxattr(path, NULL, 1, XATTR_NOFOLLOW)) > 0)
+		ret = '@';
+	else if ((acl = acl_get_link_np(path, ACL_TYPE_EXTENDED)))
+		ret = '+';
+	else
+		ret = ' ';
+	if (ret == '+')
+		acl_free(acl);
+	return (ret);
+}
+
 char	*ft_check_rwx(int law)
 {
 	if (law == 7)
@@ -49,4 +76,23 @@ char	ft_check_type_char(char type)
 	if (type == 12)
 		return ('s');
 	return ('?');
+}
+
+char	*ft_check_permission(char *path, mode_t law_b10, char type)
+{
+	char			*ret;
+	char			*tmp;
+	char			*law;
+
+	ret = ft_strnew(11);
+	ret[0] = ft_check_type_char(type);
+	tmp = ft_umaxtoa_base((uintmax_t)law_b10, "01234567");
+	law = ft_strsub(tmp, ft_strlen(tmp) - 3, ft_strlen(tmp));
+	ft_strcat(ret, ft_check_rwx(law[0] - 48));
+	ft_strcat(ret, ft_check_rwx(law[1] - 48));
+	ft_strcat(ret, ft_check_rwx(law[2] - 48));
+	ret[10] = ft_check_acl(path);
+	free(law);
+	free(tmp);
+	return (ret);
 }

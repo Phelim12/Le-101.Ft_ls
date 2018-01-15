@@ -13,39 +13,39 @@
 
 #include "ft_ls.h"
 
-char	ft_find_acl(char *path)
+void		ft_fill_file(t_ls *file, t_dirent *ptr1, char *str, int *ptr2)
 {
-	acl_t 	acl;
-	char	ret;
+	t_stat		stat;
 
-	if ((listxattr(path, NULL, 1, XATTR_NOFOLLOW)) > 0)
-		ret = '@';
-	else if ((acl = acl_get_link_np(path, ACL_TYPE_EXTENDED)))
-		ret = '+';
-	else
-		ret = ' ';
-	if (ret == '+')
-		acl_free(acl);
-	return (ret);
+	file->name = ft_strdup(ptr1->d_name);
+	file->path = ft_strjoin(str, file->name);
+	lstat(file->path, &stat);
+	file->type = ptr1->d_type;
+	file->time = stat.st_mtime;
+	*ptr2 += stat.st_blocks;
 }
 
-char	*ft_find_permission(char *path, mode_t law_b10, char type)
+char		*ft_find_time(time_t time)
 {
-	char			*ret;
-	char			*tmp;
-	char			*law;
+	char *year;
+	char *date;
+	char *tmp;
+	char *ret;
 
-	ret = ft_strnew(11);
-	ret[0] = ft_check_type_char(type);
-	tmp = ft_umaxtoa_base((uintmax_t)law_b10, "01234567");
-	law = ft_strsub(tmp, ft_strlen(tmp) - 3, ft_strlen(tmp));
-	ft_strcat(ret, ft_check_rwx(law[0] - 48));
-	ft_strcat(ret, ft_check_rwx(law[1] - 48));
-	ft_strcat(ret, ft_check_rwx(law[2] - 48));
-	ret[10] = ft_find_acl(path);
-	free(law);
-	free(tmp);
-	return (ret);
+	date = ctime(&time);
+	date[ft_strlen(date) - 1] = 0;
+	if (ft_check_time(time))
+		return (ft_strsub(date, 3, 13));
+	else
+	{
+		year = ft_isdigit(date[20]) ?
+		ft_strsub(date, 19, 5) : ft_strsub(date, 23, 6);
+		tmp = ft_strsub(date, 3, 8);
+		ret = ft_strjoin(tmp, year);
+		free(year);
+		free(tmp);
+		return (ret);
+	}
 }
 
 char		*ft_find_space(t_ls *file, char *space, int cur)
@@ -54,14 +54,18 @@ char		*ft_find_space(t_ls *file, char *space, int cur)
 	t_group		*grps;
 	t_passwd	*user;
 
-	while (cur < file->nb)
+	while (++cur < file->nb)
 	{
 		lstat(file[cur].path, &stat);
-		user = getpwuid(stat.st_uid);
-		grps = getgrgid(stat.st_gid);
 		FT_MAX_A(space[0], ft_ulen(stat.st_nlink));
-		FT_MAX_A(space[1], ft_strlen(user->pw_name));
-		FT_MAX_A(space[2], ft_strlen(grps->gr_name));
+		if ((user = getpwuid(stat.st_uid)) == NULL)
+			FT_MAX_A(space[1], ft_strlen(ft_itoa((int)stat.st_uid)));
+		else
+			FT_MAX_A(space[1], ft_strlen(user->pw_name));
+		if ((grps = getgrgid(stat.st_gid)) == NULL)
+			FT_MAX_A(space[2], ft_strlen(ft_itoa((int)stat.st_gid)));
+		else
+			FT_MAX_A(space[2], ft_strlen(grps->gr_name));
 		FT_MAX_A(space[3], ft_ilen(stat.st_size));
 		if (S_ISBLK(stat.st_mode) || S_ISCHR(stat.st_mode))
 		{
@@ -69,37 +73,11 @@ char		*ft_find_space(t_ls *file, char *space, int cur)
 			FT_MAX_A(space[5], ft_ilen(major(stat.st_rdev)));
 			space[6] = TRUE;
 		}
-		cur++;
 	}
 	return (space);
 }
 
-char		*ft_find_option(char *str)
-{
-	char	*option;
-	char	*ret;
-
-	option = ft_strnew(10);
-	ret = option;
-	while (*str)
-	{
-		if (ft_strchr("alRrt", *str) && !(ft_strchr(option, *str)))
-		{
-			*option = *str;
-			option++;
-		}
-		if (!(ft_strchr("alRrt", *str)))
-		{
-			ft_printf("ft_ls: illegal option -- %c\n", *str);
-			ft_printf("usage: ft_ls [-Ralrt] [file ...]\n", *str);
-			return (ft_strdup("error"));
-		}
-		str++;
-	}
-	return (ret);
-}
-
-t_ls	*ft_find_files(char *str, char *option)
+t_ls		*ft_find_files(char *str, char *option)
 {
 	t_dirent	*ptr;
 	t_stat		stat;
@@ -113,18 +91,39 @@ t_ls	*ft_find_files(char *str, char *option)
 	file->nb = 0;
 	file->nb_blocks = 0;
 	while ((ptr = readdir(repo)) != NULL)
-	{
-		if ((ptr->d_name[0] == '.' && ft_strchr(option, 'a')) || (ptr->d_name[0] != '.'))
-		{
-			file[file->nb].name = ft_strdup(ptr->d_name);
-			file[file->nb].path = ft_strjoin(str, file[file->nb].name );
-			lstat(file[file->nb].path, &stat);
-			file[file->nb].type = ptr->d_type;
-			file[file->nb].time = stat.st_mtime;
-			file->nb_blocks += stat.st_blocks;
-			file->nb++;
-		}
-	}
+		if ((ptr->d_name[0] == '.' && ft_strchr(option, 'a')) ||
+			(ptr->d_name[0] != '.'))
+			ft_fill_file(&file[file->nb++], ptr, str, &file->nb_blocks);
 	closedir(repo);
 	return (file);
+}
+
+char		*ft_find_option(char ***argv, char *ret, int y, int x)
+{
+	char	*option;
+
+	option = ft_strnew(10);
+	ret = option;
+	while ((*argv)[y] && (*argv)[y][0] == '-' && (*argv)[y][1] != 0)
+	{
+		x = 0;
+		while ((*argv)[y][++x])
+		{
+			if (ft_strchr("alRrt", (*argv)[y][x]) &&
+				!(ft_strchr(option, (*argv)[y][x])))
+				*option++ = (*argv)[y][x];
+			if (!(ft_strchr("1alRrt", (*argv)[y][x])))
+			{
+				ft_putstr_fd("ft_ls: illegal option -- ", 2);
+				ft_putchar_fd((*argv)[y][x], 2);
+				ft_putstr_fd("\nusage: ft_ls [-Ralrt] [file ...]\n", 2);
+				return (ft_strdup("error"));
+			}
+		}
+		y++;
+		if ((*argv)[y] && ft_strcmp((*argv)[y], "--") == 0)
+			y++;
+	}
+	*argv += y;
+	return (ret);
 }
