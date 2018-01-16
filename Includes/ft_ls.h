@@ -41,13 +41,13 @@ typedef struct passwd	t_passwd;
 
 typedef struct	s_ls
 {
-	int		nb_blocks;
-	int		error;
-	char	*name;
-	char	*path;
-	char	type;
-	int		time;
-	int		nb;
+	int			nb_blocks;
+	int			error;
+	char		*name;
+	char		*path;
+	char		type;
+	intmax_t	time;
+	int			nb;
 }				t_ls;
 
 /*
@@ -68,7 +68,7 @@ void			ft_ls(char *dir, char *option, int release);
 
 t_ls			*ft_find_argv(char **argv, char *option);
 int				ft_print_reg_argv(t_ls *file, char *option, char *space, int cur);
-void			ft_fill_argv(t_ls *file, char *str, int *ptr2);
+void			ft_fill_argv(t_ls *file, char *str, char *option);
 void			ft_ls_argv(char **argv, char *option, int cur1, int cur2);
 char			*ft_find_space_argv(t_ls *file, char *space, int cur);
 

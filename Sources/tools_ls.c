@@ -28,7 +28,8 @@ char		*ft_cut_name(char *dir)
 		dir[cur--] = 0;
 	while (dir[cur] && dir[cur] != '/')
 		cur--;
-	cur++;
+	if (cur < 0)
+		cur = 0;
 	return (dir + cur);
 }
 

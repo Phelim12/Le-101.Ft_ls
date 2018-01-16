@@ -87,11 +87,17 @@ char	*ft_check_permission(char *path, mode_t law_b10, char type)
 	ret = ft_strnew(11);
 	ret[0] = ft_check_type_char(type);
 	tmp = ft_umaxtoa_base((uintmax_t)law_b10, "01234567");
-	law = ft_strsub(tmp, ft_strlen(tmp) - 3, ft_strlen(tmp));
-	ft_strcat(ret, ft_check_rwx(law[0] - 48));
+	law = ft_strsub(tmp, ft_strlen(tmp) - 4, ft_strlen(tmp));
 	ft_strcat(ret, ft_check_rwx(law[1] - 48));
 	ft_strcat(ret, ft_check_rwx(law[2] - 48));
+	ft_strcat(ret, ft_check_rwx(law[3] - 48));
 	ret[10] = ft_check_acl(path);
+	if (law[0] == '4')
+		ret[3] = 's';
+	if (law[0] == '2')
+		ret[6] = 's';
+	if (law[0] == '1')
+		ret[9] = 't';
 	free(law);
 	free(tmp);
 	return (ret);

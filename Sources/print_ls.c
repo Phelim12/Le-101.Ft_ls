@@ -55,7 +55,7 @@ void		ft_print_line_end(t_ls file, t_stat stat, char *space)
 	else if (space[6] == TRUE)
 		ft_printf("%*d", space[4] + space[5] + 4, stat.st_size);
 	else
-		ft_printf("%*d", space[3] + 1, stat.st_size);
+		ft_printf("%*d", space[3], stat.st_size);
 	if (S_ISLNK(stat.st_mode) && (ret = readlink(file.path, buf, 1024)) > 0)
 	{
 		buf[ret] = 0;
@@ -83,9 +83,9 @@ void		ft_print_line_start(t_ls file, char *space)
 	else
 		ft_printf("%-*s  ", space[1], user->pw_name);
 	if (grps == NULL)
-		ft_printf("%-*s  ", space[1], ft_itoa((int)stat.st_gid));
+		ft_printf("%-*s  ", space[2], ft_itoa((int)stat.st_gid));
 	else
-		ft_printf("%-*s ", space[2], grps->gr_name);
+		ft_printf("%-*s  ", space[2], grps->gr_name);
 	ft_print_line_end(file, stat, space);
 	free(law);
 }

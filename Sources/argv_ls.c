@@ -13,6 +13,47 @@
 
 #include "ft_ls.h"
 
+int			ft_check_type(mode_t st_mode, int lst)
+{
+	if (lst == -1)
+		return (-1);
+	if (S_ISFIFO(st_mode))
+		return (1);
+	if (S_ISCHR(st_mode))
+		return (2);
+	if (S_ISDIR(st_mode))
+		return (4);
+	if (S_ISBLK(st_mode))
+		return (6);
+	if (S_ISREG(st_mode))
+		return (8);
+	if (S_ISLNK(st_mode))
+		return (10);
+	if (S_ISSOCK(st_mode))
+		return (12);
+	return (0);
+}
+
+void		ft_fill_argv(t_ls *file, char *str, char *option)
+{
+	char		buf[1024];
+	int			check;
+	t_stat 		stat;
+
+	check = lstat(str, &stat);
+	file->time = stat.st_mtime;
+	file->name = ft_strdup(str);
+	file->path = ft_strdup(str);
+	file->type = ft_check_type(stat.st_mode, check);
+	if (file->type == 10 && !(ft_strchr(option, 'l')))
+	{
+		readlink(file->name, buf, 1024);
+		check = lstat(buf, &stat);
+		if (ft_check_type(stat.st_mode, check) == 4)
+			file->type = 4;
+	}
+}
+
 char		*ft_find_space_argv(t_ls *file, char *space, int cur)
 {
 	t_stat		stat;
@@ -37,51 +78,25 @@ char		*ft_find_space_argv(t_ls *file, char *space, int cur)
 	return (space);
 }
 
-void		ft_fill_argv(t_ls *file, char *str, int *ptr2)
-{
-	t_stat		stat;
-
-	file->name = ft_strdup(str);
-	file->path = ft_strdup(str);
-	lstat(file->path, &stat);
-	file->time = stat.st_mtime;
-	*ptr2 += stat.st_blocks;
-	file->type = 0;
-	if (S_ISREG(stat.st_mode))
-		file->type = 8;
-	if (S_ISDIR(stat.st_mode))
-		file->type = 4;
-	if (S_ISCHR(stat.st_mode))
-		file->type = 2;
-	if (S_ISBLK(stat.st_mode))
-		file->type = 6;
-	if (S_ISFIFO(stat.st_mode))
-		file->type = 1;
-	if (S_ISLNK(stat.st_mode))
-		file->type = 10;
-	if (S_ISSOCK(stat.st_mode))
-		file->type = 12;
-}
 
 t_ls		*ft_find_argv(char **argv, char *option)
 {
-	t_dirent	*ptr;
 	t_stat		stat;
 	t_ls		*file;
-	int			len;
+	int			cur;
 
-	len = 0;
-	while (argv[len])
-		len++;
-	if (!(file = malloc(sizeof(t_ls) * (len + 1))))
+	cur = 0;
+	while (argv[cur])
+		cur++;
+	if (!(file = malloc(sizeof(t_ls) * (cur + 1))))
 		return (NULL);
 	file->nb = 0;
 	file->nb_blocks = 0;
 	while (*argv)
 	{
-		if (((*argv)[0] == '.' && ft_strchr(option, 'a')) ||
-			((*argv)[0] != '.') || ((*argv)[0] == '.' && (*argv)[1] == '/'))
-			ft_fill_argv(&file[file->nb++], *argv, &file->nb_blocks);
+		cur = lstat(*argv, &stat);
+		ft_fill_argv(&file[file->nb++], *argv, option);
+		file->nb_blocks += stat.st_blocks;
 		argv++;
 	}
 	return (file);
@@ -92,7 +107,7 @@ int			ft_print_reg_argv(t_ls *file, char *option, char *space, int cur)
 	space = ft_find_space_argv(file, ft_strnew(10), cur);
 	while (cur < file->nb)
 	{
-		if (file[cur].type != 4)
+		if (file[cur].type != 4 && file[cur].type > 0)
 		{
 			if (ft_strchr(option, 'l'))
 				ft_print_line_start(file[cur], space);
@@ -100,7 +115,7 @@ int			ft_print_reg_argv(t_ls *file, char *option, char *space, int cur)
 				ft_printf("%s\n", file[cur].name);
 			space[10] = 1;
 		}
-		else
+		else if (file[cur].type != -1)
 			space[9]++;
 		cur++;
 	}
@@ -124,7 +139,7 @@ void		ft_ls_argv(char **argv, char *option, int cur1, int cur2)
 	{
 		ft_sort_ascii(file, 0, 0);
 		if (ft_strchr(option, 't'))
-			ft_sort_time(file, 0, 0);
+			ft_sort_time(file, 1, 0);
 		if (ft_strchr(option, 'r'))
 			ft_sort_rev(file, 0);
 		cur2 = ft_print_reg_argv(file, option, NULL, 0);
@@ -138,6 +153,8 @@ void		ft_ls_argv(char **argv, char *option, int cur1, int cur2)
 				if (--cur2 > 0)
 					ft_putchar('\n');
 			}
+			if (file[cur1].type == -1)
+				ft_print_error(file[cur1].name);
 			cur1++;
 		}
 	}

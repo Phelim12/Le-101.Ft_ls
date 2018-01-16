@@ -32,6 +32,8 @@ void	ft_sort_rev(t_ls *file, int a)
 	file->nb_blocks = save_nb_blocks;
 }
 
+
+
 void	ft_sort_ascii(t_ls *file, int a, int b)
 {
 	int		save_nb_file;
@@ -59,29 +61,39 @@ void	ft_sort_ascii(t_ls *file, int a, int b)
 	file->nb_blocks = save_nb_blocks;
 }
 
+void tri_insertion(int* t)
+{
+    int i, j;
+    int en_cours;
+ 
+    for (i = 1; i < 20; i++) {
+        en_cours = t[i];
+        for (j = i; j > 0 && t[j - 1] > en_cours; j--) {
+            t[j] = t[j - 1];
+        }
+        t[j] = en_cours;
+    }
+}
+
 void	ft_sort_time(t_ls *file, int a, int b)
 {
 	int		save_nb_file;
 	int		save_nb_blocks;
-	t_ls	swap;
+	t_ls	save;
 
 	save_nb_file = file->nb;
 	save_nb_blocks = file->nb_blocks;
-	while (b < (save_nb_file * 5))
+	while (a < save_nb_file)
 	{
-		if ((a + 1) < save_nb_file && file[a].time < file[a + 1].time)
+		b = a;
+		save = file[a];
+		while (b > 0 && file[b - 1].time < save.time)
 		{
-			swap = file[a];
-			file[a] = file[a + 1];
-			file[a + 1] = swap;
-			a++;
+			file[b] = file[b - 1];
+			b--;
 		}
+		file[b] = save;
 		a++;
-		if (a >= save_nb_file)
-		{
-			b++;
-			a = 0;
-		}
 	}
 	file->nb = save_nb_file;
 	file->nb_blocks = save_nb_blocks;

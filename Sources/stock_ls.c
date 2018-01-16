@@ -107,6 +107,8 @@ char		*ft_find_option(char ***argv, char *ret, int y, int x)
 	while ((*argv)[y] && (*argv)[y][0] == '-' && (*argv)[y][1] != 0)
 	{
 		x = 0;
+		if ((*argv)[y] && ft_strcmp((*argv)[y], "--") == 0 && ++y)
+			break ;
 		while ((*argv)[y][++x])
 		{
 			if (ft_strchr("alRrt", (*argv)[y][x]) &&
@@ -121,8 +123,6 @@ char		*ft_find_option(char ***argv, char *ret, int y, int x)
 			}
 		}
 		y++;
-		if ((*argv)[y] && ft_strcmp((*argv)[y], "--") == 0)
-			y++;
 	}
 	*argv += y;
 	return (ret);
