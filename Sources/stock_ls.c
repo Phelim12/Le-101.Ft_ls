@@ -115,12 +115,7 @@ char		*ft_find_option(char ***argv, char *ret, int y, int x)
 				!(ft_strchr(option, (*argv)[y][x])))
 				*option++ = (*argv)[y][x];
 			if (!(ft_strchr("1alRrt", (*argv)[y][x])))
-			{
-				ft_putstr_fd("ft_ls: illegal option -- ", 2);
-				ft_putchar_fd((*argv)[y][x], 2);
-				ft_putstr_fd("\nusage: ft_ls [-Ralrt] [file ...]\n", 2);
-				return (ft_strdup("error"));
-			}
+				return (ft_print_error_usage((*argv)[y][x]));
 		}
 		y++;
 	}

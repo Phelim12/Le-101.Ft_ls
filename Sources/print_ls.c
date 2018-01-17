@@ -13,33 +13,6 @@
 
 #include "ft_ls.h"
 
-void		ft_print_error(char *name)
-{
-	ft_putstr_fd("ft_ls: ", 2);
-	ft_putstr_fd(name, 2);
-	ft_putstr_fd(": ", 2);
-	perror("");
-}
-
-void		ft_print_error_argv(char **argv)
-{
-	t_stat		stat;
-	DIR			*repo;
-	int			cur;
-
-	cur = -1;
-	while (argv[++cur])
-	{
-		if ((repo = opendir(argv[cur])) == NULL)
-		{
-			if ((lstat(argv[cur], &stat)) == -1)
-				ft_print_error(ft_cut_name(argv[cur]));
-		}
-		else
-			closedir(repo);
-	}
-}
-
 void		ft_print_line_end(t_ls file, t_stat stat, char *space)
 {
 	char		buf[1024];

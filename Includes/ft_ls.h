@@ -62,14 +62,25 @@ void			ft_ls(char *dir, char *option, int release);
 
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+**┃                                 error_ls.c                                 ┃
+**┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+*/
+
+void			ft_print_error(char *name);
+char			*ft_print_error_usage(char c);
+int				mft_print_empty_argv(char **argv);
+char			**ft_print_error_argv(char **argv, int ac, int cur1, int cur2);
+
+/*
+**┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 **┃                                 argv_ls.c                                  ┃
 **┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 */
 
 t_ls			*ft_find_argv(char **argv, char *option);
-int				ft_print_reg_argv(t_ls *file, char *option, char *space, int cur);
+int				ft_print_reg_argv(t_ls *file, char *opt, char *space, int cur);
 void			ft_fill_argv(t_ls *file, char *str, char *option);
-void			ft_ls_argv(char **argv, char *option, int cur1, int cur2);
+void			ft_ls_argv(t_ls	*file, char *option, int cur1, int argc);
 char			*ft_find_space_argv(t_ls *file, char *space, int cur);
 
 /*
@@ -82,6 +93,7 @@ char			*ft_check_rwx(int law);
 char			ft_check_acl(char *path);
 int				ft_check_time(time_t event);
 char			ft_check_type_char(char type);
+int				ft_check_type(mode_t st_mode, int lst);
 char			*ft_check_permission(char *path, mode_t law_b10, char type);
 
 /*
@@ -90,8 +102,6 @@ char			*ft_check_permission(char *path, mode_t law_b10, char type);
 **┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 */
 
-void			ft_print_error(char *name);
-void			ft_print_error_argv(char **argv);
 void			ft_print_ls(t_ls *file, char *option);
 void			ft_print_line_start(t_ls file, char *space);
 void			ft_print_line_end(t_ls file, t_stat stat, char *space);
@@ -103,7 +113,7 @@ void			ft_print_line_end(t_ls file, t_stat stat, char *space);
 */
 
 void			ft_sort_rev(t_ls *file, int a);
-void			ft_sort_time_argc(char ***av);
+void			ft_sort_file(t_ls *file, char *option);
 void			ft_sort_time(t_ls *file, int a, int b);
 void			ft_sort_ascii(t_ls *file, int a, int b);
 

@@ -13,6 +13,15 @@
 
 #include "ft_ls.h"
 
+void	ft_sort_file(t_ls *file, char *option)
+{
+	ft_sort_ascii(file, 0, 0);
+	if (ft_strchr(option, 't'))
+		ft_sort_time(file, 1, 0);
+	if (ft_strchr(option, 'r'))
+		ft_sort_rev(file, 0);
+}
+
 void	ft_sort_rev(t_ls *file, int a)
 {
 	int		save_nb_file;
@@ -31,8 +40,6 @@ void	ft_sort_rev(t_ls *file, int a)
 	file->nb = save_nb_file;
 	file->nb_blocks = save_nb_blocks;
 }
-
-
 
 void	ft_sort_ascii(t_ls *file, int a, int b)
 {
@@ -61,20 +68,6 @@ void	ft_sort_ascii(t_ls *file, int a, int b)
 	file->nb_blocks = save_nb_blocks;
 }
 
-void tri_insertion(int* t)
-{
-    int i, j;
-    int en_cours;
- 
-    for (i = 1; i < 20; i++) {
-        en_cours = t[i];
-        for (j = i; j > 0 && t[j - 1] > en_cours; j--) {
-            t[j] = t[j - 1];
-        }
-        t[j] = en_cours;
-    }
-}
-
 void	ft_sort_time(t_ls *file, int a, int b)
 {
 	int		save_nb_file;
@@ -97,31 +90,4 @@ void	ft_sort_time(t_ls *file, int a, int b)
 	}
 	file->nb = save_nb_file;
 	file->nb_blocks = save_nb_blocks;
-}
-
-void	ft_sort_time_argc(char ***av)
-{
-	char		*swap;
-	t_stat		stat1;
-	t_stat		stat2;
-	int			a;
-	int			b;
-
-	a = -1;
-	while ((*av)[++a])
-	{
-		b = -1;
-		lstat((*av)[a], &stat1);
-		while ((*av)[++b])
-		{
-			lstat((*av)[b], &stat2);
-			if (stat1.st_mtime > stat2.st_mtime)
-			{
-				swap = (*av)[a];
-				(*av)[a] = (*av)[b];
-				(*av)[b] = swap;
-			}
-		}
-	}
-	(*av)[++a] = NULL;
 }

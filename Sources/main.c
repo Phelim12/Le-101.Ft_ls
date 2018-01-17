@@ -13,32 +13,13 @@
 
 #include "ft_ls.h"
 
-char 		**ft_rm_duplic(char **tab)
+int			ft_count_argv(char **argv)
 {
-	char	**ret;
-	int		cur;
-	int		y;
-	int 	x;
+	int ret;
 
-	y = 0;
-	cur = 0;
-	while (tab[y])
-		y++;
-	ret = malloc(sizeof(char *) * y + 1);
-	y = 0;
-	while (tab[y])
-	{
-		x = (y + 1);
-		while (tab[x])
-		{
-			if (ft_strcmp(tab[y], tab[x]) == 0)
-				break ;
-			x++;
-		}
-		if (tab[x] == NULL)
-			ret[cur++] = tab[y];
-		y++;
-	}
+	ret = 0;
+	while (argv[ret])
+		ret++;
 	return (ret);
 }
 
@@ -71,11 +52,7 @@ void		ft_ls(char *dir, char *option, int release)
 		dir = ft_strjoin(dir, "/");
 	if ((file = ft_find_files(dir, option)))
 	{
-		ft_sort_ascii(file, 0, 0);
-		if (ft_strchr(option, 't'))
-			ft_sort_time(file, 1, 0);
-		if (ft_strchr(option, 'r'))
-			ft_sort_rev(file, 0);
+		ft_sort_file(file, option);
 		ft_print_ls(file, option);
 		if (ft_strchr(option, 'R'))
 			ft_ls_dir(file, option);
@@ -103,10 +80,14 @@ int			main(int argc, char const *argv[])
 			free(option);
 			return (1);
 		}
-		if (*av)
-			ft_ls_argv(av, option, 0, 0);
-		else
+		if (*av == NULL)
 			ft_ls(".", option, 0);
+		argc = ft_count_argv(av);
+		if (*av && (av = ft_print_error_argv(av, argc, -1, 0)))
+		{
+			ft_ls_argv(ft_find_argv(av, option), option, 0, argc);
+			free(av);
+		}
 		free(option);
 	}
 	return (0);

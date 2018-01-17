@@ -13,33 +13,6 @@
 
 #include "ft_ls.h"
 
-int		ft_check_time(time_t event)
-{
-	time_t	now;
-
-	now = time(&now);
-	if (now - event >= 0 && now - event <= 6 * 365 / 12 * 24 * 60 * 60)
-		return (1);
-	else
-		return (0);
-}
-
-char	ft_check_acl(char *path)
-{
-	acl_t	acl;
-	char	ret;
-
-	if ((listxattr(path, NULL, 1, XATTR_NOFOLLOW)) > 0)
-		ret = '@';
-	else if ((acl = acl_get_link_np(path, ACL_TYPE_EXTENDED)))
-		ret = '+';
-	else
-		ret = ' ';
-	if (ret == '+')
-		acl_free(acl);
-	return (ret);
-}
-
 char	*ft_check_rwx(int law)
 {
 	if (law == 7)
@@ -75,7 +48,55 @@ char	ft_check_type_char(char type)
 		return ('l');
 	if (type == 12)
 		return ('s');
-	return ('?');
+	return ('d');
+}
+
+int		ft_check_type(mode_t st_mode, int lst)
+{
+	if (lst == -1)
+		return (-1);
+	if (S_ISFIFO(st_mode))
+		return (1);
+	if (S_ISCHR(st_mode))
+		return (2);
+	if (S_ISDIR(st_mode))
+		return (4);
+	if (S_ISBLK(st_mode))
+		return (6);
+	if (S_ISREG(st_mode))
+		return (8);
+	if (S_ISLNK(st_mode))
+		return (10);
+	if (S_ISSOCK(st_mode))
+		return (12);
+	return (0);
+}
+
+void	ft_modify_law(char **ret, char *path, char c)
+{
+	acl_t	acl;
+
+	if (ft_strchr("4567", c) && (*ret)[3] == 'x')
+		(*ret)[3] = 's';
+	else if (ft_strchr("4567", c) && (*ret)[3] != 'x')
+		(*ret)[3] = 'S';
+	if (ft_strchr("2367", c) && (*ret)[6] == 'x')
+		(*ret)[6] = 's';
+	else if (ft_strchr("2367", c) && (*ret)[6] != 'x')
+		(*ret)[6] = 'S';
+	if (ft_strchr("1357", c) && (*ret)[9] == 'x')
+		(*ret)[9] = 't';
+	else if (ft_strchr("1357", c) && (*ret)[9] != 'x')
+		(*ret)[9] = 'T';
+	if ((listxattr(path, NULL, 1, XATTR_NOFOLLOW)) > 0)
+		(*ret)[10] = '@';
+	else if ((acl = acl_get_link_np(path, ACL_TYPE_EXTENDED)))
+	{
+		(*ret)[10] = '+';
+		acl_free(acl);
+	}
+	else
+		(*ret)[10] = ' ';
 }
 
 char	*ft_check_permission(char *path, mode_t law_b10, char type)
@@ -91,13 +112,7 @@ char	*ft_check_permission(char *path, mode_t law_b10, char type)
 	ft_strcat(ret, ft_check_rwx(law[1] - 48));
 	ft_strcat(ret, ft_check_rwx(law[2] - 48));
 	ft_strcat(ret, ft_check_rwx(law[3] - 48));
-	ret[10] = ft_check_acl(path);
-	if (law[0] == '4')
-		ret[3] = 's';
-	if (law[0] == '2')
-		ret[6] = 's';
-	if (law[0] == '1')
-		ret[9] = 't';
+	ft_modify_law(&ret, path, law[0]);
 	free(law);
 	free(tmp);
 	return (ret);
