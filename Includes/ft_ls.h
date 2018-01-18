@@ -28,12 +28,13 @@
 # include "ft_printf.h"
 # include <sys/xattr.h>
 # include <sys/acl.h>
-
+# include <sys/ioctl.h>
 # include <stdio.h>
 
 # define TRUE 1
 # define FALSE 0
 
+typedef struct winsize	t_winsize;
 typedef struct dirent	t_dirent;
 typedef struct stat		t_stat;
 typedef struct group	t_group;
@@ -139,5 +140,8 @@ char			*ft_cut_name(char *dir);
 int				ft_count_file(char *str);
 void			ft_free_files(t_ls *file);
 void			ft_safe_space(t_stat stat, char **space);
+
+
+void			ft_print_column(t_ls *file, char *option);
 
 #endif

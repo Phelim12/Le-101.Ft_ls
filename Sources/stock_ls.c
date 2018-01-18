@@ -111,10 +111,10 @@ char		*ft_find_option(char ***argv, char *ret, int y, int x)
 			break ;
 		while ((*argv)[y][++x])
 		{
-			if (ft_strchr("alRrt", (*argv)[y][x]) &&
+			if (ft_strchr("1adlRrt", (*argv)[y][x]) &&
 				!(ft_strchr(option, (*argv)[y][x])))
 				*option++ = (*argv)[y][x];
-			if (!(ft_strchr("1alRrt", (*argv)[y][x])))
+			if (!(ft_strchr("1adlRrt", (*argv)[y][x])))
 				return (ft_print_error_usage((*argv)[y][x]));
 		}
 		y++;

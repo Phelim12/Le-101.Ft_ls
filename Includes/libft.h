@@ -74,6 +74,7 @@ int				ft_ilen(int n);
 char			*ft_itoa(int n);
 int				ft_sqrt(int nb);
 int				ft_next_sqrt(int nb);
+int				ft_pgcd(int a, int b);
 int				ft_atoi(const char *s);
 unsigned int	ft_atou(const char *s);
 int				ft_imaxlen(intmax_t n);

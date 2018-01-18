@@ -48,12 +48,17 @@ void		ft_ls(char *dir, char *option, int release)
 {
 	t_ls	*file;
 
+	if (ft_strchr(option, 'd'))
+		return ((void)ft_printf("%s\n", dir));
 	if (dir[ft_strlen(dir) - 1] != '/' && ++release)
 		dir = ft_strjoin(dir, "/");
 	if ((file = ft_find_files(dir, option)))
 	{
 		ft_sort_file(file, option);
-		ft_print_ls(file, option);
+		if (ft_strchr(option, 'l') || ft_strchr(option, '1'))
+			ft_print_ls(file, option);
+		else
+			ft_print_column(file, option);
 		if (ft_strchr(option, 'R'))
 			ft_ls_dir(file, option);
 	}

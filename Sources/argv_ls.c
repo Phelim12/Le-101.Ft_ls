@@ -83,7 +83,9 @@ int			ft_print_reg_argv(t_ls *file, char *opt, char *space, int cur)
 	space = ft_find_space_argv(file, ft_strnew(10), cur);
 	while (cur < file->nb)
 	{
-		if (file[cur].type != 4 && file[cur].type > 0)
+		if (ft_strchr(opt, 'd'))
+			ft_printf("%s\n", file[cur].name);
+		else if (file[cur].type != 4 && file[cur].type > 0)
 		{
 			if (ft_strchr(opt, 'l'))
 				ft_print_line_start(file[cur], space);
@@ -109,7 +111,7 @@ void		ft_ls_argv(t_ls *file, char *option, int cur1, int argc)
 	{
 		ft_sort_file(file, option);
 		cur2 = ft_print_reg_argv(file, option, NULL, 0);
-		while (cur1 < file->nb)
+		while (cur1 < file->nb && !(ft_strchr(option, 'd')))
 		{
 			if (file[cur1].type == 4)
 			{
