@@ -25,9 +25,13 @@ void		ft_fill_argv(t_ls *file, char *str, char *option)
 		check = stat(str, &statbuf);
 	if (check == -1)
 		check = lstat(str, &statbuf);
+	file->time = statbuf.st_mtime;
+	if (ft_strchr(option, 'u'))
+		file->time = statbuf.st_atime;
+	if (ft_strchr(option, 'c'))
+		file->time = statbuf.st_ctime;
 	file->name = ft_strdup(str);
 	file->path = ft_strdup(str);
-	file->time = statbuf.st_mtime;
 	file->type = ft_check_type(statbuf.st_mode, check);
 }
 
@@ -59,21 +63,21 @@ t_ls		*ft_find_argv(char **argv, char *option)
 {
 	t_stat		stat;
 	t_ls		*file;
+	int			argc;
 	int			cur;
 
-	cur = 0;
-	while (argv[cur])
-		cur++;
-	if (!(file = malloc(sizeof(t_ls) * (cur + 1))))
+	argc = ft_count_argv(argv);
+	if (!(file = malloc(sizeof(t_ls) * (argc + 1))))
 		return (NULL);
+	cur = 0;
 	file->nb = 0;
 	file->nb_blocks = 0;
-	while (*argv)
+	while (cur < argc)
 	{
-		cur = lstat(*argv, &stat);
-		ft_fill_argv(&file[file->nb++], *argv, option);
+		lstat(argv[cur], &stat);
 		file->nb_blocks += stat.st_blocks;
-		argv++;
+		ft_fill_argv(&file[file->nb++], argv[cur], option);
+		cur++;
 	}
 	return (file);
 }
@@ -83,14 +87,14 @@ int			ft_print_reg_argv(t_ls *file, char *opt, char *space, int cur)
 	space = ft_find_space_argv(file, ft_strnew(10), cur);
 	while (cur < file->nb)
 	{
-		if (ft_strchr(opt, 'd'))
-			ft_printf("%s\n", file[cur].name);
+		if (ft_strchr(opt, 'd') || ft_strchr(opt, '~'))
+			ft_print_bonus_d(&file[cur], NULL, opt, space);
 		else if (file[cur].type != 4 && file[cur].type > 0)
 		{
 			if (ft_strchr(opt, 'l'))
-				ft_print_line_start(file[cur], space);
+				ft_print_line_start(file[cur], space, opt);
 			else
-				ft_printf("%s\n", file[cur].name);
+				ft_print_color_ls(file[cur], opt, -1, 1);
 			space[10] = 1;
 		}
 		else if (file[cur].type != -1)
@@ -111,9 +115,10 @@ void		ft_ls_argv(t_ls *file, char *option, int cur1, int argc)
 	{
 		ft_sort_file(file, option);
 		cur2 = ft_print_reg_argv(file, option, NULL, 0);
-		while (cur1 < file->nb && !(ft_strchr(option, 'd')))
+		while (cur1 < file->nb)
 		{
-			if (file[cur1].type == 4)
+			if (file[cur1].type == 4 && !(ft_strchr(option, 'd')) &&
+			!(ft_strchr(option, '~')))
 			{
 				if (file->nb > 1 || file->nb < argc)
 					ft_printf("%s:\n", file[cur1].path);

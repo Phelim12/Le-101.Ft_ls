@@ -25,7 +25,8 @@ DIR_SRC = Sources/
 DIR_LIB = Libft/
 
 NAME_SRC = 	main.c check_ls.c print_ls.c sort_ls.c stock_ls.c tools_ls.c \
-			argv_ls.c error_ls.c bonus_column_ls.c 
+			argv_ls.c error_ls.c bonus_column_ls.c bonus_multi_ls.c \
+			bonus_color_ls.c
 
 SRC =	$(addprefix $(DIR_SRC), $(NAME_SRC))
 

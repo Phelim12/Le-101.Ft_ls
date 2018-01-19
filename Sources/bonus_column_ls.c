@@ -13,7 +13,7 @@
 
 #include "ft_ls.h"
 
-int			ft_nb_col()
+int			ft_nb_col(void)
 {
 	t_winsize	w;
 
@@ -21,16 +21,31 @@ int			ft_nb_col()
 	return ((int)w.ws_col);
 }
 
-int			ft_ceil(float a, float b)
+int			ft_words_line(int nb_file, int max_name)
 {
-	int 	ret;
-	float 	test;
+	int nb_col;
+	int ret;
 
-	test = (a / b);
-	ret = test;
-	if (ret == test)
-		return (ret);
-	return (ret + 1);
+	ret = 1;
+	nb_col = ft_nb_col();
+	while ((nb_file * max_name) >= (nb_col * ret))
+		ret++;
+	return (ft_ceil((float)nb_file / (float)ret));
+}
+
+void		ft_print_line(t_ls *file, char *option, int space)
+{
+	int	cur;
+
+	cur = 0;
+	while (cur < file->nb)
+	{
+		if ((cur + 1) == file->nb)
+			ft_print_color_ls(file[cur], option, -1, 1);
+		else
+			ft_print_color_ls(file[cur], option, space, 0);
+		cur++;
+	}
 }
 
 int			ft_space_name(t_ls *file)
@@ -49,48 +64,6 @@ int			ft_space_name(t_ls *file)
 	return (ret);
 }
 
-int			ft_words_line(int nb_file, int max_name)
-{
-	int nb_col;
-	int check;
-	int cur;
-	int ret;
-
-	cur = 1;
-	check = 1;
-	nb_col = ft_nb_col();
-	while ((cur * max_name) < nb_col)
-	{
-		if ((nb_file % cur) == 0)
-			ret = cur;
-		cur++;
-	}
-	while (check < (cur - 2))
-	{
-		if ((ret * check) == nb_file)
-			return (ret);
-		check++;
-	}
-	if ((cur - 1) > 0)
-		return (cur - 1);
-	return (1);
-}
-
-void		ft_print_line(t_ls *file, char *option, int space)
-{
-	int	cur;
-
-	cur = 0;
-	while (cur < file->nb)
-	{
-		if ((cur + 1) == file->nb)
-			ft_printf("%s\n", file[cur].name);
-		else
-			ft_printf("%-*s", space + 1, file[cur].name);
-		cur++;
-	}
-}
-
 void		ft_print_column(t_ls *file, char *option)
 {
 	int	cur;
@@ -102,16 +75,16 @@ void		ft_print_column(t_ls *file, char *option)
 	cur = 0;
 	space = ft_space_name(file);
 	nfile = ft_words_line(file->nb, (space + 1));
-	nline = ft_ceil((float)file->nb, (float)nfile);
+	nline = ft_ceil((float)file->nb / (float)nfile);
 	if (nline == 1)
 		ft_print_line(file, option, space);
 	while (nline > 1 && cur < (nline * nfile))
 	{
 		ptr = (((cur % nfile) * nline) + (cur / nfile));
 		if ((ptr < file->nb) && (cur + 1) % nfile && cur + 1 < (nline * nfile))
-			ft_printf("%-*s ", space, file[ptr].name);
+			ft_print_color_ls(file[ptr], option, space, 0);
 		else if (ptr < file->nb)
-			ft_printf("%s", file[ptr].name);
+			ft_print_color_ls(file[ptr], option, -1, 0);
 		if (!(ft_strchr(option, 'R')) && ptr < file->nb)
 			ft_free_files(&file[ptr]);
 		if ((cur / nfile) < ((cur + 1) / nfile))
@@ -119,19 +92,3 @@ void		ft_print_column(t_ls *file, char *option)
 		cur++;
 	}
 }
-/*
-00 01 02 03 04
-
-10 11 12 13 
-
-20 21 22 23 
-
- 0  3  6  9 12
- 1  4  7 10 
- 2  5  8 11 */
-
-
-
-
-
-

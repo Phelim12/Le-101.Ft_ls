@@ -104,9 +104,8 @@ char			*ft_check_permission(char *path, mode_t law_b10, char type);
 */
 
 void			ft_print_ls(t_ls *file, char *option);
-void			ft_print_line_start(t_ls file, char *space);
-void			ft_print_line_end(t_ls file, t_stat stat, char *space);
-
+void			ft_print_line_start(t_ls file, char *space, char *option);
+void			ft_print_line_end(t_ls file, t_stat stat, char *sp, char *opt);
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 **┃                                  sort_ls.c                                 ┃
@@ -128,7 +127,7 @@ char			*ft_find_time(time_t time);
 t_ls			*ft_find_files(char *str, char *option);
 char			*ft_find_space(t_ls *file, char *space, int cur);
 char			*ft_find_option(char ***argv, char *ret, int y, int x);
-void			ft_fill_file(t_ls *file, t_dirent *ptr1, char *str, int *ptr2);
+void			ft_fill_file(t_ls *file, char *str, char *option, int *ptr);
 
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -139,9 +138,13 @@ void			ft_fill_file(t_ls *file, t_dirent *ptr1, char *str, int *ptr2);
 char			*ft_cut_name(char *dir);
 int				ft_count_file(char *str);
 void			ft_free_files(t_ls *file);
+int				ft_count_argv(char **argv);
 void			ft_safe_space(t_stat stat, char **space);
 
-
+char			*ft_find_color(t_ls file);
 void			ft_print_column(t_ls *file, char *option);
+void			ft_modify_option(char **option, char **ptr, char c);
+void			ft_print_bonus_d(t_ls *file, char *name, char *opt, char *sp);
+void			ft_print_color_ls(t_ls file, char *time, int space, int enter);
 
 #endif

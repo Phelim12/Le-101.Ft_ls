@@ -13,16 +13,6 @@
 
 #include "ft_ls.h"
 
-int			ft_count_argv(char **argv)
-{
-	int ret;
-
-	ret = 0;
-	while (argv[ret])
-		ret++;
-	return (ret);
-}
-
 void		ft_ls_dir(t_ls *file, char *option)
 {
 	int cur;
@@ -49,7 +39,10 @@ void		ft_ls(char *dir, char *option, int release)
 	t_ls	*file;
 
 	if (ft_strchr(option, 'd'))
-		return ((void)ft_printf("%s\n", dir));
+	{
+		ft_print_bonus_d(NULL, dir, option, NULL);
+		return ;
+	}
 	if (dir[ft_strlen(dir) - 1] != '/' && ++release)
 		dir = ft_strjoin(dir, "/");
 	if ((file = ft_find_files(dir, option)))
@@ -91,7 +84,6 @@ int			main(int argc, char const *argv[])
 		if (*av && (av = ft_print_error_argv(av, argc, -1, 0)))
 		{
 			ft_ls_argv(ft_find_argv(av, option), option, 0, argc);
-			free(av);
 		}
 		free(option);
 	}

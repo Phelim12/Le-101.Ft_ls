@@ -13,6 +13,16 @@
 
 #include "ft_ls.h"
 
+int			ft_count_argv(char **argv)
+{
+	int ret;
+
+	ret = 0;
+	while (argv[ret])
+		ret++;
+	return (ret);
+}
+
 void		ft_free_files(t_ls *file)
 {
 	free(file->name);

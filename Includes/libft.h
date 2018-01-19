@@ -74,6 +74,7 @@ int				ft_ilen(int n);
 char			*ft_itoa(int n);
 int				ft_sqrt(int nb);
 int				ft_next_sqrt(int nb);
+int				ft_ceil(float result);
 int				ft_pgcd(int a, int b);
 int				ft_atoi(const char *s);
 unsigned int	ft_atou(const char *s);
@@ -120,8 +121,8 @@ void			ft_putstr_fd(const char *s, int fd);
 void			ft_putendl_fd(const char *s, int fd);
 int				ft_putnbr_base(int nbr, char *base, int sign);
 int				ft_put_uint_base(unsigned int nbr, char *base);
-int				ft_put_intmax_base(intmax_t nbr, char *base, int sign);
 int				ft_put_uintmax_base(uintmax_t nbr, char *base);
+int				ft_put_intmax_base(intmax_t nbr, char *base, int sign);
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 **┃                            Memory : Functions                             ┃

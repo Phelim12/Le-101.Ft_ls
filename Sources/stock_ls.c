@@ -13,16 +13,18 @@
 
 #include "ft_ls.h"
 
-void		ft_fill_file(t_ls *file, t_dirent *ptr1, char *str, int *ptr2)
+void		ft_fill_file(t_ls *file, char *str, char *option, int *ptr)
 {
 	t_stat		stat;
 
-	file->name = ft_strdup(ptr1->d_name);
 	file->path = ft_strjoin(str, file->name);
 	lstat(file->path, &stat);
-	file->type = ptr1->d_type;
 	file->time = stat.st_mtime;
-	*ptr2 += stat.st_blocks;
+	if (ft_strchr(option, 'u'))
+		file->time = stat.st_atime;
+	if (ft_strchr(option, 'c'))
+		file->time = stat.st_ctime;
+	*ptr += stat.st_blocks;
 }
 
 char		*ft_find_time(time_t time)
@@ -93,7 +95,11 @@ t_ls		*ft_find_files(char *str, char *option)
 	while ((ptr = readdir(repo)) != NULL)
 		if ((ptr->d_name[0] == '.' && ft_strchr(option, 'a')) ||
 			(ptr->d_name[0] != '.'))
-			ft_fill_file(&file[file->nb++], ptr, str, &file->nb_blocks);
+		{
+			file[file->nb].type = ptr->d_type;
+			file[file->nb].name = ft_strdup(ptr->d_name);
+			ft_fill_file(&file[file->nb++], str, option, &file->nb_blocks);
+		}
 	closedir(repo);
 	return (file);
 }
@@ -102,7 +108,7 @@ char		*ft_find_option(char ***argv, char *ret, int y, int x)
 {
 	char	*option;
 
-	option = ft_strnew(10);
+	option = ft_strnew(100);
 	ret = option;
 	while ((*argv)[y] && (*argv)[y][0] == '-' && (*argv)[y][1] != 0)
 	{
@@ -111,10 +117,11 @@ char		*ft_find_option(char ***argv, char *ret, int y, int x)
 			break ;
 		while ((*argv)[y][++x])
 		{
-			if (ft_strchr("1adlRrt", (*argv)[y][x]) &&
+			ft_modify_option(&ret, &option, (*argv)[y][x]);
+			if (ft_strchr("GRacdglortu1", (*argv)[y][x]) &&
 				!(ft_strchr(option, (*argv)[y][x])))
 				*option++ = (*argv)[y][x];
-			if (!(ft_strchr("1adlRrt", (*argv)[y][x])))
+			if (!(ft_strchr("GRacdglortu1", (*argv)[y][x])))
 				return (ft_print_error_usage((*argv)[y][x]));
 		}
 		y++;
