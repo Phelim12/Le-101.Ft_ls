@@ -15,19 +15,20 @@
 
 void		ft_fill_file(t_ls *file, char *str, char *option, int *ptr)
 {
-	t_stat		stat;
+	t_stat	stat;
+	int		check;
 
 	file->path = ft_strjoin(str, file->name);
-	lstat(file->path, &stat);
-	file->time = stat.st_mtime;
-	if (ft_strchr(option, 'u'))
-		file->time = stat.st_atime;
-	if (ft_strchr(option, 'c'))
-		file->time = stat.st_ctime;
+	check = lstat(file->path, &stat);
+	file->exec = 0;
 	*ptr += stat.st_blocks;
+	file->size = stat.st_size;
+	file->time = ft_good_time(option, stat);
+	if (S_ISREG(stat.st_mode) && (S_IXUGO & stat.st_mode))
+		file->exec = 1;
 }
 
-char		*ft_find_time(time_t time)
+char		*ft_find_time(time_t time, char *option)
 {
 	char *year;
 	char *date;
@@ -36,6 +37,8 @@ char		*ft_find_time(time_t time)
 
 	date = ctime(&time);
 	date[ft_strlen(date) - 1] = 0;
+	if (ft_strchr(option, 'T'))
+		return (ft_strsub(date, 3, 21));
 	if (ft_check_time(time))
 		return (ft_strsub(date, 3, 13));
 	else
@@ -94,7 +97,8 @@ t_ls		*ft_find_files(char *str, char *option)
 	file->nb_blocks = 0;
 	while ((ptr = readdir(repo)) != NULL)
 		if ((ptr->d_name[0] == '.' && ft_strchr(option, 'a')) ||
-			(ptr->d_name[0] != '.'))
+			(ptr->d_name[0] != '.') || (ft_strchr(option, 'A') &&
+			ft_strcmp(".", ptr->d_name) && ft_strcmp("..", ptr->d_name)))
 		{
 			file[file->nb].type = ptr->d_type;
 			file[file->nb].name = ft_strdup(ptr->d_name);
@@ -118,10 +122,10 @@ char		*ft_find_option(char ***argv, char *ret, int y, int x)
 		while ((*argv)[y][++x])
 		{
 			ft_modify_option(&ret, &option, (*argv)[y][x]);
-			if (ft_strchr("GRacdglortu1", (*argv)[y][x]) &&
+			if (ft_strchr("ACFGRSTUacdfgiloprtu1", (*argv)[y][x]) &&
 				!(ft_strchr(option, (*argv)[y][x])))
 				*option++ = (*argv)[y][x];
-			if (!(ft_strchr("GRacdglortu1", (*argv)[y][x])))
+			if (!(ft_strchr("ACFGRSTUacdfgiloprtu1", (*argv)[y][x])))
 				return (ft_print_error_usage((*argv)[y][x]));
 		}
 		y++;

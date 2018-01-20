@@ -33,6 +33,7 @@
 
 # define TRUE 1
 # define FALSE 0
+# define S_IXUGO (S_IXUSR | S_IXGRP | S_IXOTH)
 
 typedef struct winsize	t_winsize;
 typedef struct dirent	t_dirent;
@@ -47,7 +48,9 @@ typedef struct	s_ls
 	char		*name;
 	char		*path;
 	char		type;
+	char		exec;
 	intmax_t	time;
+	intmax_t	size;
 	int			nb;
 }				t_ls;
 
@@ -116,6 +119,7 @@ void			ft_sort_rev(t_ls *file, int a);
 void			ft_sort_file(t_ls *file, char *option);
 void			ft_sort_time(t_ls *file, int a, int b);
 void			ft_sort_ascii(t_ls *file, int a, int b);
+void			ft_sort_size(t_ls *file, int a, int b);
 
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -123,7 +127,7 @@ void			ft_sort_ascii(t_ls *file, int a, int b);
 **┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 */
 
-char			*ft_find_time(time_t time);
+char			*ft_find_time(time_t time, char *option);
 t_ls			*ft_find_files(char *str, char *option);
 char			*ft_find_space(t_ls *file, char *space, int cur);
 char			*ft_find_option(char ***argv, char *ret, int y, int x);
@@ -146,5 +150,6 @@ void			ft_print_column(t_ls *file, char *option);
 void			ft_modify_option(char **option, char **ptr, char c);
 void			ft_print_bonus_d(t_ls *file, char *name, char *opt, char *sp);
 void			ft_print_color_ls(t_ls file, char *time, int space, int enter);
+intmax_t		ft_good_time(char *option, t_stat stat);
 
 #endif

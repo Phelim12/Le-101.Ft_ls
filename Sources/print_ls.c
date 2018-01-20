@@ -19,7 +19,7 @@ void		ft_print_line_end(t_ls file, t_stat stat, char *sp, char *opt)
 	char		*time;
 	int			ret;
 
-	time = ft_find_time(file.time);
+	time = ft_find_time(file.time, opt);
 	if (S_ISBLK(stat.st_mode) || S_ISCHR(stat.st_mode))
 	{
 		ft_printf("%*d, ", sp[4] + 1, major(stat.st_rdev));
@@ -52,6 +52,8 @@ void		ft_print_line_start(t_ls file, char *space, char *option)
 	user = getpwuid(stat.st_uid);
 	grps = getgrgid(stat.st_gid);
 	law = ft_check_permission(file.path, stat.st_mode, file.type);
+	if (ft_strchr(option, 'i'))
+		ft_printf("%s ", ft_imaxtoa((intmax_t)stat.st_ino));
 	ft_printf("%s %*d ", law, space[0], stat.st_nlink);
 	if (ft_strchr(option, 'g') && ft_strchr(option, 'o'))
 		ft_putstr("  ");

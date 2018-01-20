@@ -13,6 +13,12 @@
 
 #include "ft_ls.h"
 
+void		ft_free_files(t_ls *file)
+{
+	free(file->name);
+	free(file->path);
+}
+
 int			ft_count_argv(char **argv)
 {
 	int ret;
@@ -21,12 +27,6 @@ int			ft_count_argv(char **argv)
 	while (argv[ret])
 		ret++;
 	return (ret);
-}
-
-void		ft_free_files(t_ls *file)
-{
-	free(file->name);
-	free(file->path);
 }
 
 char		*ft_cut_name(char *dir)
@@ -56,17 +56,6 @@ int			ft_count_file(char *str)
 		nb_file++;
 	closedir(repo);
 	return (nb_file);
-}
-
-int			ft_check_time(time_t event)
-{
-	time_t	now;
-
-	now = time(&now);
-	if (now - event >= 0 && now - event <= 6 * 365 / 12 * 24 * 60 * 60)
-		return (1);
-	else
-		return (0);
 }
 
 void		ft_safe_space(t_stat stat, char **space)

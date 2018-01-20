@@ -17,7 +17,7 @@ char		*ft_print_error_usage(char c)
 {
 	ft_putstr_fd("ft_ls: illegal option -- ", 2);
 	ft_putchar_fd(c, 2);
-	ft_putstr_fd("\nusage: ft_ls [-GRadglort1] [file ...]\n", 2);
+	ft_putstr_fd("\nusage: ft_ls [-AFGRSTUacdfgloprtu1] [file ...]\n", 2);
 	return (ft_strdup("error"));
 }
 

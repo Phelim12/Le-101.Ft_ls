@@ -15,7 +15,6 @@
 
 void		ft_fill_argv(t_ls *file, char *str, char *option)
 {
-	char		buf[1024];
 	int			check;
 	t_stat		statbuf;
 
@@ -25,14 +24,14 @@ void		ft_fill_argv(t_ls *file, char *str, char *option)
 		check = stat(str, &statbuf);
 	if (check == -1)
 		check = lstat(str, &statbuf);
-	file->time = statbuf.st_mtime;
-	if (ft_strchr(option, 'u'))
-		file->time = statbuf.st_atime;
-	if (ft_strchr(option, 'c'))
-		file->time = statbuf.st_ctime;
+	file->exec = 0;
+	file->size = statbuf.st_size;
 	file->name = ft_strdup(str);
 	file->path = ft_strdup(str);
+	file->time = ft_good_time(option, statbuf);
 	file->type = ft_check_type(statbuf.st_mode, check);
+	if (S_ISREG(statbuf.st_mode) && (S_IXUGO & statbuf.st_mode))
+		file->exec = 1;
 }
 
 char		*ft_find_space_argv(t_ls *file, char *space, int cur)
