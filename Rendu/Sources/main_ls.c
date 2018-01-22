@@ -13,7 +13,7 @@
 
 #include "ft_ls.h"
 
-void		ft_ls_dir(t_ls *file, char *option)
+void	ft_ls_dir(t_ls *file, char *option)
 {
 	int cur;
 
@@ -34,7 +34,35 @@ void		ft_ls_dir(t_ls *file, char *option)
 	}
 }
 
-void		ft_ls(char *dir, char *option, int release)
+void	ft_ls_argv(t_ls *file, char *option, int cur1, int argc)
+{
+	int cur2;
+
+	if (file)
+	{
+		ft_sort_files(file, option);
+		cur2 = ft_print_reg_argv(file, option, -1);
+		while (cur1 < file->nb)
+		{
+			if (file[cur1].type == 4 && !(ft_strchr(option, 'd')) &&
+			!(ft_strchr(option, '~')))
+			{
+				if (file->nb > 1 || file->nb < argc)
+					ft_printf("%s:\n", file[cur1].path);
+				ft_ls(file[cur1].path, option, 0);
+				if (--cur2 > 0)
+					ft_putchar('\n');
+			}
+			if (file[cur1].type == -1)
+				ft_print_error(file[cur1].name);
+			ft_free_files(&file[cur1]);
+			cur1++;
+		}
+	}
+	free(file);
+}
+
+void	ft_ls(char *dir, char *option, int release)
 {
 	t_ls	*file;
 
@@ -47,11 +75,11 @@ void		ft_ls(char *dir, char *option, int release)
 		dir = ft_strjoin(dir, "/");
 	if ((file = ft_find_files(dir, option)))
 	{
-		ft_sort_file(file, option);
+		ft_sort_files(file, option);
 		if (ft_strchr(option, 'l') || ft_strchr(option, '1'))
-			ft_print_ls(file, option);
+			ft_print_files(file, option);
 		else
-			ft_print_column(file, option);
+			ft_print_column(file, option, 0);
 		if (ft_strchr(option, 'R'))
 			ft_ls_dir(file, option);
 	}
@@ -62,7 +90,7 @@ void		ft_ls(char *dir, char *option, int release)
 	free(file);
 }
 
-int			main(int argc, char const *argv[])
+int		main(int argc, char const *argv[])
 {
 	char *option;
 	char **av;
@@ -72,7 +100,7 @@ int			main(int argc, char const *argv[])
 		ft_ls(".", "-", 0);
 	else
 	{
-		option = ft_find_option(&av, NULL, 1, 0);
+		option = ft_find_option(&av, ft_strnew(100), 1, 0);
 		if (ft_strcmp(option, "error") == 0)
 		{
 			free(option);
@@ -83,7 +111,8 @@ int			main(int argc, char const *argv[])
 		argc = ft_count_argv(av);
 		if (*av && (av = ft_print_error_argv(av, argc, -1, 0)))
 		{
-			ft_ls_argv(ft_find_argv(av, option), option, 0, argc);
+			ft_ls_argv(ft_find_files_argv(av, option), option, 0, argc);
+			free(av);
 		}
 		free(option);
 	}

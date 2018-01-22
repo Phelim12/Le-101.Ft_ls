@@ -33,6 +33,10 @@
 
 # define TRUE 1
 # define FALSE 0
+# define COL "C"
+# define LINE "glno"
+# define LARGE "glno"
+# define NOLARGE "1"
 # define S_IXUGO (S_IXUSR | S_IXGRP | S_IXOTH)
 
 typedef struct winsize	t_winsize;
@@ -43,113 +47,148 @@ typedef struct passwd	t_passwd;
 
 typedef struct	s_ls
 {
-	int			nb_blocks;
+	int			nb;
 	int			error;
-	char		*name;
-	char		*path;
+	int			nb_blocks;
 	char		type;
 	char		exec;
+	char		*name;
+	char		*path;
 	intmax_t	time;
 	intmax_t	size;
-	int			nb;
 }				t_ls;
 
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-**┃                                   main.c                                   ┃
+**┃                                 main_ls.c                                  ┃
 **┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 */
 
 int				main(int argc, char const *argv[]);
 void			ft_ls_dir(t_ls *file, char *option);
+void			ft_ls_argv(t_ls *file, char *option, int cur1, int argc);
 void			ft_ls(char *dir, char *option, int release);
 
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-**┃                                 error_ls.c                                 ┃
+**┃                              find_option_ls.c                              ┃
 **┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 */
 
-void			ft_print_error(char *name);
-char			*ft_print_error_usage(char c);
-int				mft_print_empty_argv(char **argv);
-char			**ft_print_error_argv(char **argv, int ac, int cur1, int cur2);
+void			ft_modify_option_end(char **option, char c);
+void			ft_modify_option_next(char **option, char c);
+void			ft_modify_option(char **option, char **ptr, char c);
+char			*ft_find_option(char ***argv, char *option, int y, int x);
 
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-**┃                                 argv_ls.c                                  ┃
+**┃                               find_files_ls.c                              ┃
 **┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 */
 
-t_ls			*ft_find_argv(char **argv, char *option);
-int				ft_print_reg_argv(t_ls *file, char *opt, char *space, int cur);
-void			ft_fill_argv(t_ls *file, char *str, char *option);
-void			ft_ls_argv(t_ls	*file, char *option, int cur1, int argc);
-char			*ft_find_space_argv(t_ls *file, char *space, int cur);
+void			ft_fill_file(t_ls *file, char *str, char *option, int *ptr);
+void			ft_fill_file_argv(t_ls *file, char *str, char *option);
+t_ls			*ft_find_files_argv(char **argv, char *option);
+t_ls			*ft_find_files(char *str, char *option);
 
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-**┃                                 check_ls.c                                 ┃
+**┃                              print_files_ls.c                              ┃
+**┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+*/
+
+int				ft_print_reg_argv(t_ls *file, char *opt, int cur);
+void			ft_print_line_end(t_ls file, t_stat stat, char *sp, char *opt);
+void			ft_print_line_start(t_ls file, char *space, char *option);
+void			ft_print_files(t_ls *file, char *option);
+
+/*
+**┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+**┃                              find_params_ls.c                              ┃
+**┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+*/
+
+intmax_t		ft_find_good_time(char *option, t_stat stat);
+char			*ft_find_time(time_t time, char *option);
+char			*ft_find_space_argv(t_ls *file, char *opt);
+char			*ft_find_space(t_ls *file, char *space, char *option, int cur);
+
+/*
+**┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+**┃                               find_law_ls.c                                ┃
 **┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 */
 
 char			*ft_check_rwx(int law);
-char			ft_check_acl(char *path);
-int				ft_check_time(time_t event);
 char			ft_check_type_char(char type);
-int				ft_check_type(mode_t st_mode, int lst);
-char			*ft_check_permission(char *path, mode_t law_b10, char type);
+void			ft_modify_law(char **ret, char *path, char c);
+char			*ft_find_law(char *path, mode_t law_b10, char type);
 
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-**┃                                 print_ls.c                                 ┃
-**┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-*/
-
-void			ft_print_ls(t_ls *file, char *option);
-void			ft_print_line_start(t_ls file, char *space, char *option);
-void			ft_print_line_end(t_ls file, t_stat stat, char *sp, char *opt);
-/*
-**┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-**┃                                  sort_ls.c                                 ┃
+**┃                               sort_files_ls.c                              ┃
 **┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 */
 
 void			ft_sort_rev(t_ls *file, int a);
-void			ft_sort_file(t_ls *file, char *option);
-void			ft_sort_time(t_ls *file, int a, int b);
 void			ft_sort_ascii(t_ls *file, int a, int b);
+void			ft_sort_time(t_ls *file, int a, int b);
 void			ft_sort_size(t_ls *file, int a, int b);
+void			ft_sort_files(t_ls *file, char *option);
 
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-**┃                                 stock_ls.c                                 ┃
+**┃                              print_error_ls.c                              ┃
 **┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 */
 
-char			*ft_find_time(time_t time, char *option);
-t_ls			*ft_find_files(char *str, char *option);
-char			*ft_find_space(t_ls *file, char *space, int cur);
-char			*ft_find_option(char ***argv, char *ret, int y, int x);
-void			ft_fill_file(t_ls *file, char *str, char *option, int *ptr);
+char			*ft_print_error_usage(char c);
+void			ft_print_error(char *name);
+int				ft_print_empty_argv(char **argv);
+char			**ft_print_error_argv(char **argv, int ac, int cur1, int cur2);
 
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-**┃                                 tools_ls.c                                 ┃
+**┃                               tools_a_ls.c                                 ┃
 **┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 */
 
+int				ft_nb_col(void);
 char			*ft_cut_name(char *dir);
-int				ft_count_file(char *str);
 void			ft_free_files(t_ls *file);
 int				ft_count_argv(char **argv);
-void			ft_safe_space(t_stat stat, char **space);
+int				ft_check_time(time_t event);
 
-char			*ft_find_color(t_ls file);
-void			ft_print_column(t_ls *file, char *option);
-void			ft_modify_option(char **option, char **ptr, char c);
+/*
+**┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+**┃                               tools_b_ls.c                                 ┃
+**┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+*/
+
+int				ft_count_file(char *str);
+int				ft_check_type(mode_t st_mode, int lst);
+void			ft_safe_space(t_stat stat, char **space, char *option);
+
+/*
+**┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+**┃                              column_bonus_ls.c                             ┃
+**┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+*/
+
+int				ft_space_name(t_ls *file);
+int				ft_words_line(int nb_file, int max_name);
+void			ft_print_one_line(t_ls *file, char *option, int space);
+void			ft_print_column(t_ls *file, char *option, int cur);
+
+/*
+**┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+**┃                              multi_bonus_ls.c                              ┃
+**┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+*/
+
+char			*ft_check_color(t_ls file);
+char			ft_check_char_file(t_ls file, char *option);
 void			ft_print_bonus_d(t_ls *file, char *name, char *opt, char *sp);
-void			ft_print_color_ls(t_ls file, char *time, int space, int enter);
-intmax_t		ft_good_time(char *option, t_stat stat);
+void			ft_print_color_ls(t_ls file, char *opt, int space, int enter);
 
 #endif

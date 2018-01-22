@@ -51,27 +51,6 @@ char	ft_check_type_char(char type)
 	return ('d');
 }
 
-int		ft_check_type(mode_t st_mode, int lst)
-{
-	if (lst == -1)
-		return (-1);
-	if (S_ISFIFO(st_mode))
-		return (1);
-	if (S_ISCHR(st_mode))
-		return (2);
-	if (S_ISDIR(st_mode))
-		return (4);
-	if (S_ISBLK(st_mode))
-		return (6);
-	if (S_ISREG(st_mode))
-		return (8);
-	if (S_ISLNK(st_mode))
-		return (10);
-	if (S_ISSOCK(st_mode))
-		return (12);
-	return (0);
-}
-
 void	ft_modify_law(char **ret, char *path, char c)
 {
 	acl_t	acl;
@@ -99,11 +78,11 @@ void	ft_modify_law(char **ret, char *path, char c)
 		(*ret)[10] = ' ';
 }
 
-char	*ft_check_permission(char *path, mode_t law_b10, char type)
+char	*ft_find_law(char *path, mode_t law_b10, char type)
 {
-	char			*ret;
-	char			*tmp;
-	char			*law;
+	char	*ret;
+	char	*tmp;
+	char	*law;
 
 	ret = ft_strnew(11);
 	ret[0] = ft_check_type_char(type);

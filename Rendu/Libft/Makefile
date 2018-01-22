@@ -89,7 +89,7 @@ $(NAME): $(OBJ)
 	@$(eval TO_DO=$(shell echo $$((20-$(INDEX)*20/$(NB) - 1))))
 	@$(eval COLOR=$(shell list=(160 196 202 208 215 221 226 227 190 154 118 82 ); index=$$(($(PERCENT) * $${#list[@]} / 100)); echo "$${list[$$index]}"))
 	@printf "\r\033[38;5;%dm⌛ [%s]: %2d%% `printf '█%.0s' {0..$(DONE)}`%*s❙%*.*s\033[0m\033[K" $(COLOR) $(NAME) $(PERCENT) $(TO_DO) "" $(DELTA) $(DELTA) "$(shell echo "$@" | sed 's/^.*\///')"
-	@$(CC) $(CFLAGS) -I $(DIR_INC) -o $@ -c $< 
+	@$(CC) $(C_FLAGS) -I $(DIR_INC) -o $@ -c $< 
 
 clean:
 	@if [ -e Char/ft_isspace.c ]; \

@@ -13,7 +13,35 @@
 
 #include "ft_ls.h"
 
-void		ft_print_line_end(t_ls file, t_stat stat, char *sp, char *opt)
+int		ft_print_reg_argv(t_ls *file, char *opt, int cur)
+{
+	char	*space;
+	int		ret;
+
+	ret = 0;
+	space = ft_find_space_argv(file, opt);
+	while (++cur < file->nb)
+	{
+		if (ft_strchr(opt, 'd') || ft_strchr(opt, '~'))
+			ft_print_bonus_d(&file[cur], NULL, opt, space);
+		else if (file[cur].type != 4 && file[cur].type > 0)
+		{
+			if (ft_strchr(opt, 'l'))
+				ft_print_line_start(file[cur], space, opt);
+			else
+				ft_print_color_ls(file[cur], opt, -1, 1);
+			space[10] = 1;
+		}
+		else if (file[cur].type != -1)
+			ret++;
+	}
+	if (ret > 0 && space[10] == 1)
+		ft_putchar('\n');
+	free(space);
+	return (ret);
+}
+
+void	ft_print_line_end(t_ls file, t_stat stat, char *sp, char *opt)
 {
 	char		buf[1024];
 	char		*time;
@@ -25,7 +53,7 @@ void		ft_print_line_end(t_ls file, t_stat stat, char *sp, char *opt)
 		ft_printf("%*d, ", sp[4] + 1, major(stat.st_rdev));
 		ft_printf("%*d", sp[5] + 1, minor(stat.st_rdev));
 	}
-	else if (sp[6] == TRUE)
+	else if (sp[6] > 0)
 		ft_printf("%*d", sp[4] + sp[5] + 4, stat.st_size);
 	else
 		ft_printf("%*d", sp[3], stat.st_size);
@@ -41,7 +69,7 @@ void		ft_print_line_end(t_ls file, t_stat stat, char *sp, char *opt)
 	free(time);
 }
 
-void		ft_print_line_start(t_ls file, char *space, char *option)
+void	ft_print_line_start(t_ls file, char *space, char *option)
 {
 	t_passwd	*user;
 	t_group		*grps;
@@ -51,31 +79,31 @@ void		ft_print_line_start(t_ls file, char *space, char *option)
 	lstat(file.path, &stat);
 	user = getpwuid(stat.st_uid);
 	grps = getgrgid(stat.st_gid);
-	law = ft_check_permission(file.path, stat.st_mode, file.type);
+	law = ft_find_law(file.path, stat.st_mode, file.type);
 	if (ft_strchr(option, 'i'))
 		ft_printf("%s ", ft_imaxtoa((intmax_t)stat.st_ino));
 	ft_printf("%s %*d ", law, space[0], stat.st_nlink);
 	if (ft_strchr(option, 'g') && ft_strchr(option, 'o'))
 		ft_putstr("  ");
-	if (user == NULL && !(ft_strchr(option, 'g')))
+	if ((user == NULL || ft_strchr(option, 'n')) && !(ft_strchr(option, 'g')))
 		ft_printf("%-*s  ", space[1], ft_itoa((int)stat.st_uid));
-	else if (!(ft_strchr(option, 'g')))
+	else if (!(ft_strchr(option, 'g')) && !(ft_strchr(option, 'n')))
 		ft_printf("%-*s  ", space[1], user->pw_name);
-	if (grps == NULL && !(ft_strchr(option, 'o')))
+	if ((grps == NULL || ft_strchr(option, 'n')) && !(ft_strchr(option, 'o')))
 		ft_printf("%-*s  ", space[2], ft_itoa((int)stat.st_gid));
-	else if (!(ft_strchr(option, 'o')))
+	else if (!(ft_strchr(option, 'o')) && !(ft_strchr(option, 'n')))
 		ft_printf("%-*s  ", space[2], grps->gr_name);
 	ft_print_line_end(file, stat, space, option);
 	free(law);
 }
 
-void		ft_print_ls(t_ls *file, char *option)
+void	ft_print_files(t_ls *file, char *option)
 {
 	char		*space;
 	int			cur;
 
 	cur = 0;
-	space = ft_find_space(file, ft_strnew(7), -1);
+	space = ft_find_space(file, ft_strnew(7), option, -1);
 	if (ft_strchr(option, 'l') && file->nb > 0)
 		ft_printf("total %d\n", file->nb_blocks);
 	while (cur < file->nb)

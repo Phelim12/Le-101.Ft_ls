@@ -13,18 +13,23 @@
 
 #include "ft_ls.h"
 
-int			ft_nb_col(void)
+int		ft_space_name(t_ls *file)
 {
-	t_winsize	w;
+	int ret;
+	int	cur;
 
-	ioctl(0, TIOCGWINSZ, &w);
-	return ((int)w.ws_col);
+	ret = 0;
+	cur = -1;
+	while (++cur < file->nb)
+		if (ft_strlen(file[cur].name) > ret)
+			ret = ft_strlen(file[cur].name);
+	return (ret);
 }
 
-int			ft_words_line(int nb_file, int max_name)
+int		ft_words_line(int nb_file, int max_name)
 {
-	int nb_col;
-	int ret;
+	int			nb_col;
+	int			ret;
 
 	ret = 1;
 	nb_col = ft_nb_col();
@@ -33,54 +38,37 @@ int			ft_words_line(int nb_file, int max_name)
 	return (ft_ceil((float)nb_file / (float)ret));
 }
 
-void		ft_print_line(t_ls *file, char *option, int space)
+void	ft_print_one_line(t_ls *file, char *option, int space)
 {
 	int	cur;
 
-	cur = 0;
-	while (cur < file->nb)
+	cur = -1;
+	while (++cur < file->nb)
 	{
 		if ((cur + 1) == file->nb)
 			ft_print_color_ls(file[cur], option, -1, 1);
 		else
 			ft_print_color_ls(file[cur], option, space, 0);
-		cur++;
 	}
 }
 
-int			ft_space_name(t_ls *file)
+void	ft_print_column(t_ls *file, char *option, int cur)
 {
-	int	cur;
-	int ret;
-
-	cur = 0;
-	ret = 0;
-	while (cur < file->nb)
-	{
-		if (ft_strlen(file[cur].name) > ret)
-			ret = ft_strlen(file[cur].name);
-		cur++;
-	}
-	return (ret);
-}
-
-void		ft_print_column(t_ls *file, char *option)
-{
-	int	cur;
 	int	ptr;
 	int	space;
 	int	nfile;
 	int	nline;
 
-	cur = 0;
 	space = ft_space_name(file);
 	nfile = ft_words_line(file->nb, (space + 1));
 	nline = ft_ceil((float)file->nb / (float)nfile);
 	if (nline == 1)
-		ft_print_line(file, option, space);
+		ft_print_one_line(file, option, space);
 	while (nline > 1 && cur < (nline * nfile))
 	{
-		ptr = (((cur % nfile) * nline) + (cur / nfile));
+		ptr = cur;
+		if (!(ft_strchr(option, 'x')))
+			ptr = (((cur % nfile) * nline) + (cur / nfile));
 		if ((ptr < file->nb) && (cur + 1) % nfile && cur + 1 < (nline * nfile))
 			ft_print_color_ls(file[ptr], option, space, 0);
 		else if (ptr < file->nb)

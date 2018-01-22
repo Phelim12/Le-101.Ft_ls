@@ -15,6 +15,7 @@
 
 CC = gcc
 
+C_FLAGS = -Wall -Wextra -Werror
 
 NAME = ft_ls
 
@@ -24,9 +25,9 @@ DIR_SRC = Sources/
 
 DIR_LIB = Libft/
 
-NAME_SRC = 	main.c check_ls.c print_ls.c sort_ls.c stock_ls.c tools_ls.c \
-			argv_ls.c error_ls.c bonus_column_ls.c bonus_multi_ls.c \
-			bonus_color_ls.c
+NAME_SRC = 	main_ls.c find_law_ls.c	tools_a_ls.c tools_b_ls.c find_files_ls.c \
+			sort_files_ls.c print_files_ls.c find_params_ls.c print_error_ls.c \
+			find_option_ls.c multi_bonus_ls.c column_bonus_ls.c
 
 SRC =	$(addprefix $(DIR_SRC), $(NAME_SRC))
 

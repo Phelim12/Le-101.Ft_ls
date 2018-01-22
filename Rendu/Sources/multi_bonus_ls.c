@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                          LE - /            */
 /*                                                              /             */
-/*   bonus_color_ls.c                                 .::    .:/ .      .::   */
+/*   bonus_d.c                                        .::    .:/ .      .::   */
 /*                                                 +:+:+   +:    +:  +:+:+    */
 /*   By: clcreuso <clcreuso@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
-/*   Created: 2018/01/19 17:52:38 by clcreuso     #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/19 17:52:38 by clcreuso    ###    #+. /#+    ###.fr     */
+/*   Created: 2018/01/19 15:45:10 by clcreuso     #+#   ##    ##    #+#       */
+/*   Updated: 2018/01/19 15:45:10 by clcreuso    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-char	ft_print_char_file(t_ls file, char *option)
+char	ft_check_char_file(t_ls file, char *option)
 {
 	if (!(ft_strchr(option, 'F')))
 		return (0);
@@ -34,7 +34,7 @@ char	ft_print_char_file(t_ls file, char *option)
 	return ('/');
 }
 
-char	*ft_find_color(t_ls file)
+char	*ft_check_color(t_ls file)
 {
 	if (file.type == 4)
 		return ("\033[1;36;40m");
@@ -55,21 +55,48 @@ char	*ft_find_color(t_ls file)
 	return ("\033[1;36;40m");
 }
 
-void	ft_print_color_ls(t_ls file, char *option, int space, int enter)
+void	ft_print_bonus_d(t_ls *file, char *name, char *opt, char *sp)
+{
+	char	**tab;
+	int		cur;
+
+	if (file == NULL)
+	{
+		cur = 0;
+		tab = malloc(sizeof(char *) * 2);
+		while (opt[cur])
+		{
+			if (opt[cur] == 'd')
+				opt[cur] = '~';
+			cur++;
+		}
+		tab[1] = NULL;
+		tab[0] = ft_strdup(name);
+		ft_ls_argv(ft_find_files_argv(tab, opt), opt, 0, 1);
+		free(tab[1]);
+		free(tab);
+	}
+	else if (ft_strchr(opt, 'l'))
+		ft_print_line_start(*file, sp, opt);
+	else
+		ft_print_color_ls(*file, opt, -1, 1);
+}
+
+void	ft_print_color_ls(t_ls file, char *opt, int space, int enter)
 {
 	char	*color;
 	t_stat	stat;
 	char	type;
 
-	color = ft_find_color(file);
+	color = ft_check_color(file);
 	space -= (ft_strlen(file.name) - 1);
-	type = ft_print_char_file(file, option);
+	type = ft_check_char_file(file, opt);
 	lstat(file.path, &stat);
-	if (ft_strchr(option, 'i') && !(ft_strchr(option, 'l')))
+	if (ft_strchr(opt, 'i') && !(ft_strchr(opt, 'l')))
 		ft_printf("%s ", ft_imaxtoa((intmax_t)stat.st_ino));
-	if (ft_strchr(option, 'p') && file.type == 4)
+	if (ft_strchr(opt, 'p') && file.type == 4)
 		type = '/';
-	if (ft_strchr(option, 'G') && color)
+	if (ft_strchr(opt, 'G') && color)
 		ft_printf("%s%s\033[0m", color, file.name);
 	else
 		ft_printf("%s", file.name);

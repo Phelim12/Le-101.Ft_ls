@@ -13,15 +13,15 @@
 
 #include "ft_ls.h"
 
-char		*ft_print_error_usage(char c)
+char	*ft_print_error_usage(char c)
 {
 	ft_putstr_fd("ft_ls: illegal option -- ", 2);
 	ft_putchar_fd(c, 2);
-	ft_putstr_fd("\nusage: ft_ls [-AFGRSTUacdfgloprtu1] [file ...]\n", 2);
+	ft_putstr_fd("\nusage: ft_ls [-ACFGRSTUacdfgilnoprtux1] [file ...]\n", 2);
 	return (ft_strdup("error"));
 }
 
-void		ft_print_error(char *name)
+void	ft_print_error(char *name)
 {
 	ft_putstr_fd("ft_ls: ", 2);
 	ft_putstr_fd(name, 2);
@@ -29,7 +29,7 @@ void		ft_print_error(char *name)
 	perror("");
 }
 
-int			ft_print_empty_argv(char **argv)
+int		ft_print_empty_argv(char **argv)
 {
 	int cur;
 
@@ -45,7 +45,7 @@ int			ft_print_empty_argv(char **argv)
 	return (1);
 }
 
-char		**ft_print_error_argv(char **argv, int ac, int cur1, int cur2)
+char	**ft_print_error_argv(char **argv, int ac, int cur1, int cur2)
 {
 	t_stat		stat;
 	DIR			*repo;

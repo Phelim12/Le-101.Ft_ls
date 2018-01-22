@@ -13,19 +13,6 @@
 
 #include "ft_ls.h"
 
-void	ft_sort_file(t_ls *file, char *option)
-{
-	if (ft_strchr(option, 'f'))
-		return ;
-	ft_sort_ascii(file, 0, 0);
-	if (ft_strchr(option, 't') && !(ft_strchr(option, 'S')))
-		ft_sort_time(file, 1, 0);
-	if (ft_strchr(option, 'S'))
-		ft_sort_size(file, 1, 0);
-	if (ft_strchr(option, 'r'))
-		ft_sort_rev(file, 0);
-}
-
 void	ft_sort_rev(t_ls *file, int a)
 {
 	int		save_nb_file;
@@ -118,4 +105,17 @@ void	ft_sort_size(t_ls *file, int a, int b)
 	}
 	file->nb = save_nb_file;
 	file->nb_blocks = save_nb_blocks;
+}
+
+void	ft_sort_files(t_ls *file, char *option)
+{
+	if (ft_strchr(option, 'f'))
+		return ;
+	ft_sort_ascii(file, 0, 0);
+	if (ft_strchr(option, 't') && !(ft_strchr(option, 'S')))
+		ft_sort_time(file, 1, 0);
+	if (ft_strchr(option, 'S'))
+		ft_sort_size(file, 1, 0);
+	if (ft_strchr(option, 'r'))
+		ft_sort_rev(file, 0);
 }

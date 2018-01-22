@@ -19,6 +19,14 @@ void		ft_free_files(t_ls *file)
 	free(file->path);
 }
 
+int			ft_nb_col(void)
+{
+	t_winsize	w;
+
+	ioctl(0, TIOCGWINSZ, &w);
+	return ((int)w.ws_col);
+}
+
 int			ft_count_argv(char **argv)
 {
 	int ret;
@@ -27,6 +35,17 @@ int			ft_count_argv(char **argv)
 	while (argv[ret])
 		ret++;
 	return (ret);
+}
+
+int			ft_check_time(time_t event)
+{
+	time_t	now;
+
+	now = time(&now);
+	if (now - event >= 0 && now - event <= 6 * 365 / 12 * 24 * 60 * 60)
+		return (1);
+	else
+		return (0);
 }
 
 char		*ft_cut_name(char *dir)
@@ -41,34 +60,4 @@ char		*ft_cut_name(char *dir)
 	if (cur < 0)
 		cur = 0;
 	return (dir + cur);
-}
-
-int			ft_count_file(char *str)
-{
-	t_dirent	*ptr_file;
-	int			nb_file;
-	DIR			*repo;
-
-	nb_file = 0;
-	ptr_file = NULL;
-	repo = opendir(str);
-	while ((ptr_file = readdir(repo)) != NULL)
-		nb_file++;
-	closedir(repo);
-	return (nb_file);
-}
-
-void		ft_safe_space(t_stat stat, char **space)
-{
-	t_group		*grps;
-	t_passwd	*user;
-
-	if ((user = getpwuid(stat.st_uid)) == NULL)
-		FT_MAX_A((*space)[1], ft_strlen(ft_itoa((int)stat.st_uid)));
-	else
-		FT_MAX_A((*space)[1], ft_strlen(user->pw_name));
-	if ((grps = getgrgid(stat.st_gid)) == NULL)
-		FT_MAX_A((*space)[2], ft_strlen(ft_itoa((int)stat.st_gid)));
-	else
-		FT_MAX_A((*space)[2], ft_strlen(grps->gr_name));
 }
