@@ -37,11 +37,11 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@make -C $(DIR_LIB)
-	@$(CC) $(OBJ) -L $(DIR_LIB) -lft -o $(NAME) 
+	@$(CC) $(C_FLAGS) $(OBJ) -L $(DIR_LIB) -lft -o $(NAME) 
 	@echo "\033[0;32m✅️   make ft_ls."
 
 ./%.o: ./%.c
-	@$(CC) -I $(DIR_INC) -o $@ -c $< 
+	@$(CC) $(C_FLAGS) -I $(DIR_INC) -o $@ -c $< 
 	@echo "\033[0;32m✅️   $@ created."
 
 clean:

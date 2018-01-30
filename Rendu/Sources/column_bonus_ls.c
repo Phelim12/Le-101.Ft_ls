@@ -49,6 +49,8 @@ void	ft_print_one_line(t_ls *file, char *option, int space)
 			ft_print_color_ls(file[cur], option, -1, 1);
 		else
 			ft_print_color_ls(file[cur], option, space, 0);
+		if (!(ft_strchr(option, 'R')))
+			ft_free_files(&file[cur]);
 	}
 }
 
