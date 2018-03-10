@@ -24,12 +24,11 @@
 # include <unistd.h>
 # include <sys/stat.h>
 # include <sys/types.h>
-# include "libft.h"
-# include "ft_printf.h"
 # include <sys/xattr.h>
 # include <sys/acl.h>
 # include <sys/ioctl.h>
 # include <stdio.h>
+# include "../Libft/Includes/libft.h"
 
 # define TRUE 1
 # define FALSE 0
@@ -97,10 +96,11 @@ t_ls			*ft_find_files(char *str, char *option);
 **┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 */
 
-int				ft_print_reg_argv(t_ls *file, char *opt, int cur);
-void			ft_print_line_end(t_ls file, t_stat stat, char *sp, char *opt);
-void			ft_print_line_start(t_ls file, char *space, char *option);
 void			ft_print_files(t_ls *file, char *option);
+int				ft_print_reg_argv(t_ls *file, char *opt, int cur);
+void			ft_print_uid_gid(t_stat stat, char *option, char *space);
+void			ft_print_line_start(t_ls file, char *space, char *option);
+void			ft_print_line_end(t_ls file, t_stat stat, char *sp, char *opt);
 
 /*
 **┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓

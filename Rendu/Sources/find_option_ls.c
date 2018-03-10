@@ -92,7 +92,10 @@ char	*ft_find_option(char ***argv, char *option, int y, int x)
 				!(ft_strchr(option, (*argv)[y][x])))
 				*option++ = (*argv)[y][x];
 			if (!(ft_strchr("ACFGRSTUacdfgilnoprtux1", (*argv)[y][x])))
+			{
+				free(option);
 				return (ft_print_error_usage((*argv)[y][x]));
+			}
 		}
 		y++;
 	}

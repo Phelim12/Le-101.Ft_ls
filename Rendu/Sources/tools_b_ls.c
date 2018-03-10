@@ -51,15 +51,21 @@ int		ft_count_file(char *str)
 
 void	ft_safe_space(t_stat stat, char **space, char *option)
 {
+	char		*uid;
+	char		*gid;
 	t_group		*grps;
 	t_passwd	*user;
 
+	uid = ft_itoa((int)stat.st_uid);
+	gid = ft_itoa((int)stat.st_gid);
 	if ((user = getpwuid(stat.st_uid)) == NULL || ft_strchr(option, 'n'))
-		FT_MAX_A((*space)[1], ft_strlen(ft_itoa((int)stat.st_uid)));
+		FT_MAX_A((*space)[1], ft_strlen(uid));
 	else
 		FT_MAX_A((*space)[1], ft_strlen(user->pw_name));
+	ft_strdel(&uid);
 	if ((grps = getgrgid(stat.st_gid)) == NULL || ft_strchr(option, 'n'))
-		FT_MAX_A((*space)[2], ft_strlen(ft_itoa((int)stat.st_gid)));
+		FT_MAX_A((*space)[2], ft_strlen(gid));
 	else
 		FT_MAX_A((*space)[2], ft_strlen(grps->gr_name));
+	ft_strdel(&gid);
 }

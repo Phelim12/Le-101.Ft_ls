@@ -73,7 +73,7 @@ void	ft_print_bonus_d(t_ls *file, char *name, char *opt, char *sp)
 		tab[1] = NULL;
 		tab[0] = ft_strdup(name);
 		ft_ls_argv(ft_find_files_argv(tab, opt), opt, 0, 1);
-		free(tab[1]);
+		free(tab[0]);
 		free(tab);
 	}
 	else if (ft_strchr(opt, 'l'))
@@ -85,6 +85,7 @@ void	ft_print_bonus_d(t_ls *file, char *name, char *opt, char *sp)
 void	ft_print_color_ls(t_ls file, char *opt, int space, int enter)
 {
 	char	*color;
+	char	*str;
 	t_stat	stat;
 	char	type;
 
@@ -93,7 +94,8 @@ void	ft_print_color_ls(t_ls file, char *opt, int space, int enter)
 	type = ft_check_char_file(file, opt);
 	lstat(file.path, &stat);
 	if (ft_strchr(opt, 'i') && !(ft_strchr(opt, 'l')))
-		ft_printf("%s ", ft_imaxtoa((intmax_t)stat.st_ino));
+		ft_printf("%s ", (str = ft_imaxtoa((intmax_t)stat.st_ino)));
+	ft_strdel(&str);
 	if (ft_strchr(opt, 'p') && file.type == 4)
 		type = '/';
 	if (ft_strchr(opt, 'G') && color)
