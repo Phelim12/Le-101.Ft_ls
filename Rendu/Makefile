@@ -15,9 +15,9 @@
 
 CC = gcc
 
-C_FLAGS = -Wall -Wextra -Werror
-
 NAME = ft_ls
+
+C_FLAGS = -Wall -Wextra -Werror
 
 DIR_INC = Includes/
 
