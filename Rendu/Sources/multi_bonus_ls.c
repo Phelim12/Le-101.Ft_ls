@@ -89,6 +89,7 @@ void	ft_print_color_ls(t_ls file, char *opt, int space, int enter)
 	t_stat	stat;
 	char	type;
 
+	str = NULL;
 	color = ft_check_color(file);
 	space -= (ft_strlen(file.name) - 1);
 	type = ft_check_char_file(file, opt);
